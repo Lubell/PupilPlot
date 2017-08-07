@@ -121,7 +121,7 @@ stimuliCorrectedMean = zeros(num_participants, interestLine, num_stimuli);
 stimulationsUncorrectedMean = zeros(num_participants, interestLine, num_stimuli);
 
 if TF_REP
-    disp('Averaging repeated Conditions')
+    disp('Averaging repeated Conditions...')
     
     
     

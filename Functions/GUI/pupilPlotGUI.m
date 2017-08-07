@@ -103,6 +103,7 @@ handles.triggerInfo = trigTable;
 
 handles.plotMenu.Enable = 'off';
 handles.analysisMenu.Enable = 'off';
+handles.preProcMenu.Enable = 'off';
 
 % Update handles structure
 guidata(hObject, handles);
@@ -163,6 +164,7 @@ if ~isempty(dname)
     guidata(hObject, handles);
     
     handles = importSMIRun(handles);
+    handles.preProcMenu.Enable = 'on';
     guidata(hObject, handles);
 end
 
@@ -190,6 +192,7 @@ else
     
     guidata(hObject, handles);
     handles = importSMIRun(handles);
+    handles.preProcMenu.Enable = 'on';
     guidata(hObject, handles);
 end
 
@@ -235,6 +238,11 @@ handles.GeneralData.fs = 0;
 handles.GeneralData.preProcOkay = 0;
 handles.log = checkOutTable;
 handles.triggerInfo = trigTable;
+handles.preProcMenu.Enable = 'off';
+handles.plotMenu.Enable = 'off';
+handles.analysisMenu.Enable = 'off';
+[~,handles] = plotMenuCheck(1,handles);
+disp('PupilPlot Reset!')
 % Update handles structure
 guidata(hObject, handles);
 

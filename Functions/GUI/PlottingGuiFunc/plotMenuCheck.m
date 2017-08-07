@@ -58,6 +58,9 @@ for i = 1:12 % number of current plots
             end
     end
 end
-
-hObject.Checked = 'on';
+if isnumeric(hObject)
+    hObject = 1;
+else
+    hObject.Checked = 'on';
+end
 
