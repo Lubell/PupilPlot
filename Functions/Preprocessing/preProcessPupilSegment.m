@@ -116,14 +116,9 @@ for i = 1:num_participants
         for j = 1:sum(allQT)
             eyeData(i).Kind(j).typeT(qt).trial = currentEye(indexQT(j):indexQT(j)+interestLine-1);
             eyeData(i).Kind(j).typeB(qt).trial = currentEye(indexQT(j)-baseLine:indexQT(j)-1);
-            %eyeData(i).Kind(j).typeT(qt).instancesType = length(indexQT);
             eyeData(i).Kind(j).trialName(qt).type = currentStimKind;
-            eyeData(i).Kind(j).correctedMM(qt).type = eyeData(i).Kind(j).typeT(qt).trial - mean(eyeData(i).Kind(j).typeB(qt).trial);
-            eyeData(i).Kind(j).correctedPrec(qt).type = eyeData(i).Kind(j).typeT(qt).trial - mean(eyeData(i).Kind(j).typeB(qt).trial)...
-                ./mean(eyeData(i).Kind(j).typeB(qt).trial) * 100;
-            eyeData(i).Kind(j).whereAm(qt).type =[i j qt];
-            
             StimulationsAll(i,:,outerTestLoop) = [currentEye(indexQT(j)-baseLine:indexQT(j)-1) currentEye(indexQT(j):indexQT(j)+interestLine-1)];
+            
             outerTestLoop = outerTestLoop + 1;
         end
         

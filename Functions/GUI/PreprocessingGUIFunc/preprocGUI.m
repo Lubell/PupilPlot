@@ -95,15 +95,11 @@ if isequal(checkOutTable{4,1},1)
     handles.offsetSize.String = num2str(beforeTime);
     
     handles.setSample.String= num2str(checkOutTable{2,3});
-    
-    handles.TF_REP = varargin{2};
-    handles.recurTF.Value = varargin{2};
 else
     % set the basic values
     handles.cleanValues = {1,'debug off',10};
     handles.baseLineTimes = {1,0,0,0};
     handles.fsValues = {0,0,0};
-    handles.TF_REP = 1;
 end
 
 
@@ -126,7 +122,6 @@ function varargout = preprocGUI_OutputFcn(hObject, eventdata, handles)
 % Get default command line output from handles structure
 
 varargout{1} = handles.log;
-varargout{2} = handles.TF_REP;
 delete(hObject)
 
 
@@ -500,14 +495,3 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
     set(hObject,'BackgroundColor','white');
 end
 
-
-% --- Executes on button press in recurTF.
-function recurTF_Callback(hObject, eventdata, handles)
-% hObject    handle to recurTF (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hint: get(hObject,'Value') returns toggle state of recurTF
-
-handles.TF_REP = get(hObject,'Value');
-guidata(hObject,handles)

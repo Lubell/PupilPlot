@@ -52,21 +52,32 @@ if isempty(varargin)
     
 else
     optVar = varargin{1};
-    srate = optVar{7,2};
+    srate = optVar{2,3};
     if isequal(srate,0)
         srate = inputdlg('What is the sampling rate of the date?','SRATE');
         srate = srate{1};
         srate= str2double(srate);
     end
     
+    
     PathName = [optVar{1,2} filesep];
-    FileName = optVar{7,1};
+    workingDir = dir([PathName '*IMP*']);
+    str = {workingDir.name};
+    [s,v] = listdlg('PromptString','Select file to plot:',...
+        'SelectionMode','single',...
+        'ListString',str);
+    
+    if isequal(v,0)
+        return
+    end
+    
+    FileName = workingDir(s(1)).name;
     
     
     [EYE,~,~,~,~] = setupEYE(PathName,FileName,srate);
-
-
-    pop_Eyeplot(EYE,1,1,0)
-
+    
+    
+    pop_Eyeplot(EYE,1,1,0);
+    
 end
 

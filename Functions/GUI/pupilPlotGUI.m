@@ -97,13 +97,13 @@ handles.GeneralData.usePriorDir = 0;
 handles.GeneralData.fs = 0;
 handles.GeneralData.preProcOkay = 0;
 handles.GeneralData.runAnalysisOkay = 0;
-handles.GeneralData.TF_REP = 1;
 
 handles.log = checkOutTable;
 handles.triggerInfo = trigTable;
 
 handles.plotMenu.Enable = 'off';
 handles.analysisMenu.Enable = 'off';
+
 % Update handles structure
 guidata(hObject, handles);
 
@@ -310,10 +310,9 @@ function setPreProcOptMenu_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-[logMan,tf_rep] = preprocGUI(handles.log,handles.GeneralData.TF_REP);
+logMan = preprocGUI(handles.log);
 
 handles.GeneralData.fs = logMan{2,3};
-handles.GeneralData.TF_REP = tf_rep;
 handles.log = logMan;
 guidata(hObject,handles)
 
@@ -324,7 +323,7 @@ function baselineToolMenu_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-miniProc
+miniProc(handles.log);
 
 
 % --------------------------------------------------------------------

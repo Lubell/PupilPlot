@@ -2,7 +2,7 @@ function start_PupilPlotGUI(varargin)
 % This is the main function for opening the gui
 % Examples:
 %   >>start_PupilPlotGUI
-%    Simply starts the PupilPlotGUI wherever you're currently located
+%    Simply starts the PupilPlotGUI
 %   >>start_PupilPlotGUI('nogui')
 %    Sets the paths for PupilPlot: functions can be used without the gui
 
