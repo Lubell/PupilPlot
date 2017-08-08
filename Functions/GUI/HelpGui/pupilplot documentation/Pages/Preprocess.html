@@ -1,0 +1,41 @@
+<html xmlns:tomboy="http://beatniksoftware.com/tomboy" xmlns:size="http://beatniksoftware.com/tomboy/size" xmlns:link="http://beatniksoftware.com/tomboy/link"><head><META http-equiv="Content-Type" content="text/html; charset=utf-8"><title>Preprocess</title><style type="text/css">
+	body {  }
+	h1 { font-size: xx-large;
+     	     font-weight: bold;
+     	     border-bottom: 1px solid black; }
+	div.note {
+		   position: relative;
+		   display: block;
+		   padding: 5pt;
+		   margin: 5pt; 
+		   white-space: -moz-pre-wrap; /* Mozilla */
+ 	      	   white-space: -pre-wrap;     /* Opera 4 - 6 */
+ 	      	   white-space: -o-pre-wrap;   /* Opera 7 */
+ 	      	   white-space: pre-wrap;      /* CSS3 */
+ 	      	   word-wrap: break-word;      /* IE 5.5+ */ }
+	</style></head><body><div class="note" id="Preprocess"><a name="preprocess"></a><h1>Preprocess</h1>
+This function group prepares the data for analysis
+
+<ul><li dir="ltr">Clean blinks
+<ul><li dir="ltr">uses a function found through the gastro paper
+</li><li dir="ltr">already separate
+</li></ul></li><li dir="ltr">remove baseline
+<ul><li dir="ltr">removes baseline
+<ul><li dir="ltr">define the trial length
+</li><li dir="ltr">define the part of the trial that will be baseline
+</li><li dir="ltr">define where the trigger is relative to the 0 point of the epoch
+</li></ul></li><li dir="ltr">Needs work
+</li></ul></li><li dir="ltr">Set Sample Rate
+<ul><li dir="ltr">set what rate the data was sampled at
+</li></ul></li><li dir="ltr">Trial number
+<ul><li dir="ltr">can either be auto populated or manually done
+</li><li dir="ltr">Should indicate the total number of trials that each recording contains
+</li></ul></li><li dir="ltr">Trigger importer
+<ul><li dir="ltr">opens a new window 
+</li><li dir="ltr">Pulls all triggers from one data record
+</li><li dir="ltr">allows user to define which annotations should be used as trial triggers
+</li><li dir="ltr">renames the triggers?
+</li><li dir="ltr">Also allows raw data to be viewed with the annotations: <a style="color:#204A87" href="baseLine Tool.html">baseLine Tool</a>
+</li></ul></li><li dir="ltr"><a style="color:#204A87" href="Load.html">Load</a> preprocessed file
+<ul><li dir="ltr"><a style="color:#204A87" href="Load.html">load</a> saved settings for pre-processing</li></ul></li></ul>
+</div></body></html>
