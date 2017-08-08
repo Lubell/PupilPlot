@@ -22,7 +22,7 @@ function varargout = TriggerImporter(varargin)
 
 % Edit the above text to modify the response to help TriggerImporter
 
-% Last Modified by GUIDE v2.5 04-Aug-2017 12:55:40
+% Last Modified by GUIDE v2.5 08-Aug-2017 15:26:46
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -615,6 +615,3 @@ switch selection
     case 'No'
         return
 end
-
-% Hint: delete(hObject) closes the figure
-
