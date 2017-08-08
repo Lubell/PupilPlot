@@ -25,5 +25,5 @@ end
 
 if isempty(varargin)
    
-    pupilPlotGUI
+    pupilPlotGUI({currentLocation})
 end

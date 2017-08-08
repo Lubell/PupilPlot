@@ -22,7 +22,7 @@ function varargout = pupilPlotGUI(varargin)
 
 % Edit the above text to modify the response to help pupilPlotGUI
 
-% Last Modified by GUIDE v2.5 31-Jul-2017 14:32:12
+% Last Modified by GUIDE v2.5 08-Aug-2017 14:24:43
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -62,7 +62,12 @@ guidata(hObject, handles);
 imgSecond= peaks(400);
 plot(handles.mainAxe,imgSecond);
 
-
+if ~isempty(varargin{1})
+    currDirr = varargin{1};
+    handles.topDirPP = currDirr{1};
+else
+    handles.topDirPP = 0;
+end
 Colors = colormap(lines(20));
 cheatColor = colormap(autumn);
 
@@ -475,7 +480,7 @@ if isequal(handles.log{1,1},0)
     warndlg('First load some eye tracking data','No files')
     return
 elseif isequal(handles.GeneralData.preProcOkay,0)
-    warndlg('Looks like not all the preprocess options have been set or something is wrong with them','PreProc Opt Error')
+    warndlg('Looks like not all the preprocess options have been set. Check Command line for more info.','PreProc Opt Error')
     return
 end
 dataOpt = handles.log;
@@ -1733,4 +1738,44 @@ if isa(hObject,'matlab.graphics.primitive.Patch')
 else
     % just a line
     set(hObject,'color',newColor)
+end
+
+
+% --------------------------------------------------------------------
+function helpMenu_Callback(hObject, eventdata, handles)
+% hObject    handle to helpMenu (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+% --------------------------------------------------------------------
+function aboutMeMenu_Callback(hObject, eventdata, handles)
+% hObject    handle to aboutMeMenu (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+if ~isnumeric(handles.topDirPP)
+
+myicon = imread([handles.topDirPP filesep 'Functions' filesep 'GUI' filesep 'HelpGui' filesep 'eye.png']);
+msgbox('Created by Jamie Lubell 2017','About','custom',myicon);
+
+
+else
+    disp('Missing directories.  Made by Jamie Lubell 2017 CC license')
+end
+
+% --------------------------------------------------------------------
+function helpPageMenu_Callback(hObject, eventdata, handles)
+% hObject    handle to helpPageMenu (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+if ~isnumeric(handles.topDirPP)
+
+url = [handles.topDirPP filesep 'Functions' filesep 'GUI' filesep 'HelpGui'...
+    filesep 'pupilplot documentation' filesep 'PupilPlot.html'];
+web(url)
+
+else
+    disp('Missing directories.  Made by Jamie Lubell 2017 CC license')
 end

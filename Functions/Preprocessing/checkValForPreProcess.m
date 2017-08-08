@@ -46,7 +46,7 @@ for i = 1:length(checkValues)
             
         case 4
             if isequal(0,checkValues{i})
-                warndlg('Please set baseline options','Set baseline')
+                disp('Please set baseline options')
                 handles.GeneralData.preProcOkay = 0;
                 handlesOut = handles;
                 return
@@ -72,7 +72,7 @@ for i = 1:length(checkValues)
             else
                 genData = handles.GeneralData;
                 if ~isfield(genData,'triggerNames')
-                    warndlg('Please run the Trigger importer','Trig import')
+                    disp('Please run the Trigger importer')
                     handles.GeneralData.preProcOkay = 0;
                     handlesOut = handles;
                     return
@@ -89,10 +89,15 @@ for i = 1:length(checkValues)
                 handles.checkOutTable.Data = checkOutTable;
                 grabTNames = 1;
             end
-            if grabTNames
+            if grabTNames && ~isempty(triggerTable)
                 checkOutTable{6,2} = [triggerTable{1} ' etc...'];
                 handles.checkOutTable.Data = checkOutTable;
                 handles.GeneralData.triggerNames = triggerTable;
+            else
+                disp('Please import triggers first')
+                handles.GeneralData.preProcOkay = 0;
+                handlesOut = handles;
+                return
             end
     end
 end
