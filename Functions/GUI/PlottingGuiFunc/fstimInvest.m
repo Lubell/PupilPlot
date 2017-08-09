@@ -104,7 +104,7 @@ end
 guidata(hObject, handles);
 
 % UIWAIT makes fstimInvest wait for user response (see UIRESUME)
-% uiwait(handles.figure1);
+uiwait(handles.figure1);
 
 
 % --- Outputs from this function are returned to the command line.
@@ -115,7 +115,8 @@ function varargout = fstimInvest_OutputFcn(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Get default command line output from handles structure
-varargout{1} = handles.output;
+varargout{1} = handles.output.UserData;
+delete(handles.figure1)
 
 
 % --- Executes on button press in doneView.
@@ -235,7 +236,7 @@ else
     
     handles.output.UserData = PCA_time;
     guidata(hObject, handles);
-    fstimInvest_OutputFcn(hObject, eventdata, handles);
+    uiresume(handles.figure1);
 end
 
 
