@@ -24,7 +24,7 @@ function [plotItself] = plotAnalysisResults(varargin)
 %                   and determine the principle components there within
 %       'peak' - shows a table that indicates whether the conditions have a
 %       significantly different peak dilation than each other
-%       'help'
+%       'help' - show this message
 %
 %   The second argument (Y) is a pupil plot GeneralData struct 
 %       - See preProcessPupil_Wrapper for more info on GeneralData structs
