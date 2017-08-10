@@ -63,7 +63,7 @@ function [plotItself] = plotAnalysisResults(varargin)
 
 
 
-if size(varargin,2)>=3 && isstr(varargin{1}) && iscell(varargin{3}) && isstruct(varargin{2})
+if size(varargin,2)>=3 && ischar(varargin{1}) && iscell(varargin{3}) && isstruct(varargin{2})
     % to be plotted in GUI window and different varargins
     typeOAnalysis = lower(varargin{1});
     genData = varargin{2};
