@@ -1756,8 +1756,19 @@ function aboutMeMenu_Callback(hObject, eventdata, handles)
 
 if ~isnumeric(handles.topDirPP)
 
-myicon = imread([handles.topDirPP filesep 'Functions' filesep 'GUI' filesep 'HelpGui' filesep 'eye.png']);
-msgbox('Created by Jamie Lubell 2017','About','custom',myicon);
+iconData = imread([handles.topDirPP filesep 'Functions' filesep 'GUI' filesep 'HelpGui' filesep 'eye.png']);
+
+
+Button=buttondlg('Created by Jamie Lubell 2017','About','Done','Github',struct('Default','Done','IconString','custom','IconData',iconData)); 
+
+switch Button      
+        
+    case 'Github'
+        url = 'https://github.uio.no/jameslu';
+        web(url,'-browser')
+end
+
+
 
 
 else

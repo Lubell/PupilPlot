@@ -41,7 +41,7 @@ ddf_error = (size(X_Perc_DataSelected,1)-1)-ddf_1 - ddf_2;
 
 F=finv(1-alphaReal,ddf_1,ddf_error);
 %
-
+F_Sign = zeros(1,size (X_Perc_DataSelected,2));
 
 times = size (X_Perc_DataSelected,2);
 for time = 1:times

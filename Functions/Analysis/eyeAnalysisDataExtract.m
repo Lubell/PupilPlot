@@ -15,7 +15,7 @@ end
 % Data extraction
 
 % ----- Calculation of the observations removed
-if TF_REP == 1; % If there are repetitions, the matrix for data analysis is Stimuli_Data_Corr/Perc_Mean
+if TF_REP == 1 % If there are repetitions, the matrix for data analysis is Stimuli_Data_Corr/Perc_Mean
     num_del = zeros (num_stimuli,1);
     for stimulus = 1:num_stimuli
         for participant = 1:num_participants
