@@ -184,16 +184,11 @@ for time = 1:times
 end
 
 if pca_go
-    waittingF = 0;
     
-    while isequal(waittingF,0)
-        samplesOfNote= fstimInvest({F_time,F_Sign,X_Perc_DataSelected,0,COND,SUBJECTS,1-alphaReal});
-        if not(isequal(samplesOfNote.UserData,0.5))
-            waittingF = 1;
-        end
-    end
-    PCA_time = samplesOfNote.UserData;
-    close fstimInvest    
+    PCA_time= fstimInvest({F_time,F_Sign,X_Perc_DataSelected,0,COND,SUBJECTS,1-alphaReal});
+    
+
+    
     P_stim.ptime = p_time;
     P_stim.psign = p_sign;
     F_stim.fsign = F_Sign;
