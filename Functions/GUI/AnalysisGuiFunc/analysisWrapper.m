@@ -36,7 +36,7 @@ zScore = abs(norminv(alphaReal/2));
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Calculate curves
+% Calculate plots for pupil diameter evolution
 
 [xPercSD,xPercCIAbove,xPercCIBelow,xCorrSD,xCorrCIAbove,xCorrCIBelow,xUncorrSD,xUncorrCIAbove,xUncorrCIBelow] = ...
     eyeAnalysisCurveCalc(zScore,...
@@ -78,7 +78,7 @@ Stimuli_Data_Corr_Mean = pPR.Stimuli_Data_Corr_Mean;
 Stimulations_Data_UnCorr_Mean = pPR.Stimulations_Data_UnCorr_Mean;
 Stimuli_Data_Perc_Mean = pPR.Stimuli_Data_Perc_Mean;
 
-% Think we've got all the pieces we need 
+% We've got all the pieces we need 
 % SO save:
 newFile = fileparts(epochProcessFile);
 save([newFile filesep 'Analysis_StageOne_' parentDir '.mat'],'L_stim','Stimulations_All','Stimulations_Data_Perc','alphaSelect','Stimulations_names',...

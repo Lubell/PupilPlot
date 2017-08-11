@@ -7,22 +7,24 @@ else
     TF_REP = varargin{1};
     Data_Corr = varargin{2};
     num_stimuli = size(Data_Corr,3);
-    num_participants = size(Data_Corr,1);
+    subjects_all = size(Data_Corr,1);
     Stimuli_ranks = varargin{3};
 
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Data extraction
+% Data prep
 
 % ----- Calculation of the observations removed
-if TF_REP == 1 % If there are repetitions, the matrix for data analysis is Stimuli_Data_Corr/Perc_Mean
+% If conditions are repeated within a subject's data record (they see the same
+% condition more than once) the matrix is Data_Corr_Mean and Data_Perc_Mean
+if TF_REP == 1 
     num_del = zeros (num_stimuli,1);
     for stimulus = 1:num_stimuli
-        for participant = 1:num_participants
-            X_Corr_Sum (participant,stimulus) = sum((Data_Corr(participant,:,Stimuli_ranks(stimulus,1)))');
-            if X_Corr_Sum (participant,stimulus) ==0
+        for subject = 1:subjects_all
+            X_Corr_Sum (subject,stimulus) = sum((Data_Corr(subject,:,Stimuli_ranks(stimulus,1)))');
+            if X_Corr_Sum (subject,stimulus) ==0
                 num_del (stimulus,1) = num_del (stimulus,1) + 1;
-                participants_del (num_del (stimulus,1),stimulus) = participant;
+                participants_del (num_del (stimulus,1),stimulus) = subject;
             end
         end
     end
@@ -32,14 +34,14 @@ if TF_REP == 1 % If there are repetitions, the matrix for data analysis is Stimu
     
 
     
-else % If there is no repetitions, the matrix for data analysis is Stimuli_Data_Corr/Perc
+else % Otherwise the matrix for data analysis is Data_Corr Perc_Corr
     num_del = zeros (num_stimuli,1);
     for stimulus = 1:num_stimuli
-        for participant = 1:num_participants
-            X_Corr_Sum (participant,stimulus) = sum ((Data_Corr(participant,:,Stimuli_ranks(stimulus,1)))');
-            if X_Corr_Sum (participant,stimulus) ==0
+        for subject = 1:subjects_all
+            X_Corr_Sum (subject,stimulus) = sum ((Data_Corr(subject,:,Stimuli_ranks(stimulus,1)))');
+            if X_Corr_Sum (subject,stimulus) ==0
                 num_del (stimulus,1) = num_del (stimulus,1) + 1;
-                participants_del (num_del (stimulus,1),stimulus) = participant;
+                participants_del (num_del (stimulus,1),stimulus) = subject;
             end
         end
     end
@@ -51,15 +53,15 @@ end
 
 % Identification of participants to remove
 participants_del_Total = 0;
-for participant = 1:num_participants
-    ans=length(find(participants_del==participant));
+for subject = 1:subjects_all
+    ans=length(find(participants_del==subject));
     if ans ~=0
         participants_del_Total = participants_del_Total +1;
-        Part_To_Del (participants_del_Total,1) = participant;
+        Part_To_Del (participants_del_Total,1) = subject;
     end
 end
 for stimulus = 1:num_stimuli
-    num_participants_F (stimulus,1) = num_participants - participants_del_Total;
+    num_participants_F (stimulus,1) = subjects_all - participants_del_Total;
 end
 lines_toDel_Sum = participants_del_Total * num_stimuli;
 lines_toDel = zeros (lines_toDel_Sum,1);
@@ -70,6 +72,6 @@ if participants_del_Total>0
     for stimulus = 1 :num_stimuli
         lines_toDel (line_start : participants_del_Total*stimulus)= Part_To_Del (:,1)+z;
         line_start = line_start + participants_del_Total;
-        z = z + num_participants;
+        z = z + subjects_all;
     end
 end

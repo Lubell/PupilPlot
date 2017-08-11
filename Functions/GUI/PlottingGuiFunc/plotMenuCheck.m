@@ -58,6 +58,7 @@ for i = 1:12 % number of current plots
             end
     end
 end
+
 if isnumeric(hObject)
     hObject = 1;
 else

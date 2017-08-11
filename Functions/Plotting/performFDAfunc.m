@@ -12,10 +12,7 @@ for i = 1:num_parts % for each participant, create mean data for each condition,
 end
 
 
-differences = fda_conditionTwo-fda_conditionOne; % we'll do a t test comparing them... so the focus is on the difference between each, for each participant
-% differences = fda_conditionOne-fda_conditionTwo; % Need to figure this
-% out.  Does it even matter which is subtract from the other?
-
+differences = fda_conditionTwo-fda_conditionOne; % t-test comp of the difference per participant
 
 basis = create_bspline_basis([1 interestLineSamples],10,4); % b-spline basis object
 y=1:interestLineSamples;

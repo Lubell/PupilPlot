@@ -4,19 +4,22 @@ function [ANOVA_data,binNumber] = anova_Plot(varargin)
 % choose number of bins to display pupil change Should be determined by
 % length of epoch
 
-if isequal(length(varargin),6)
+if isequal(length(varargin),7)
     interestLineSamples = varargin{1};
     %interestLineMS = varargin{2};
     num_parts = varargin{3};
     num_stimuli = varargin{4};
     Stimuli_Data_Corr_Mean = varargin{5};
     binNumber = varargin{6};
+    fs = varargin{7};
+
 else
     interestLineSamples = varargin{1};
     interestLineMS = varargin{2};
     num_parts = varargin{3};
     num_stimuli = varargin{4};
     Stimuli_Data_Corr_Mean = varargin{5};
+    fs = varargin{6};
 
     
     
@@ -47,6 +50,7 @@ else
     slots = 1:interestLineSamples/binNumber:interestLineSamples;
     ANOVA_data = zeros(num_parts,binNumber*numberOfStimuli);
     countDown = numberOfStimuli-1;
+    oneHundredMS = sampleTimes(fs,100,'ms');
     warning off
     for i = num_stimuli
         
@@ -54,7 +58,7 @@ else
             condition =  Stimuli_Data_Corr_Mean(j,:,i);
             for k = numberOfStimuli:numberOfStimuli:binNumber*numberOfStimuli % possibly bin number * stimuli number
                 manTwo = k/numberOfStimuli;
-                med2Be = condition(slots(manTwo):slots(manTwo)+6);
+                med2Be = condition(slots(manTwo):slots(manTwo)+oneHundredMS);
                 ANOVA_data(j,k-countDown) = median(med2Be);
                 
             end

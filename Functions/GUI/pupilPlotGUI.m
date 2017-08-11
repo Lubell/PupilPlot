@@ -22,7 +22,7 @@ function varargout = pupilPlotGUI(varargin)
 
 % Edit the above text to modify the response to help pupilPlotGUI
 
-% Last Modified by GUIDE v2.5 08-Aug-2017 14:24:43
+% Last Modified by GUIDE v2.5 11-Aug-2017 19:21:32
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -246,6 +246,7 @@ handles.triggerInfo = trigTable;
 handles.preProcMenu.Enable = 'off';
 handles.plotMenu.Enable = 'off';
 handles.analysisMenu.Enable = 'off';
+handles.exportToSpreadMenu.Enable = 'off';
 [~,handles] = plotMenuCheck(1,handles);
 disp('PupilPlot Reset!')
 % Update handles structure
@@ -291,6 +292,12 @@ function viewLogMenu_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 viewLog(handles.log)
 
+
+% --------------------------------------------------------------------
+function exportToSpreadMenu_Callback(hObject, eventdata, handles)
+% hObject    handle to exportToSpreadMenu (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
 
 % --------------------------------------------------------------------
 function quitMenu_Callback(hObject, eventdata, handles)
@@ -672,6 +679,7 @@ if success
     handles.plotMenu.Enable = 'on';
     handles.graphName.String = 'Analysis Finished.  Ready to plot.';
     handles.GeneralData.selectMe = 1:length(handles.GeneralData.triggerNames);
+    handles.exportToSpreadMenu.Enable = 'on';
 else
     warndlg('Something isn''t right')
     return
@@ -1297,7 +1305,9 @@ else
     num_stimuli = 1:num_stimuli;
 end
 
-[ANOVA_data,binNumber] = anova_Plot(interestLineSamples,interestLineMS,analysisVariables.num_participants_F(1),num_stimuli,analysisVariables.Stimuli_Data_Corr_Mean);
+[ANOVA_data,binNumber] = anova_Plot(interestLineSamples,interestLineMS,...
+    analysisVariables.num_participants_F(1),num_stimuli,...
+    analysisVariables.Stimuli_Data_Corr_Mean,sampleRate);
 
 handles.GeneralData.binned = binNumber;
 if isequal(binNumber,1)
@@ -1790,3 +1800,4 @@ web(url)
 else
     disp('Missing directories.  Made by Jamie Lubell 2017 CC license')
 end
+
