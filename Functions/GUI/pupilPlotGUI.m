@@ -1374,7 +1374,7 @@ end
 
 [~,P_stim,~] = pStim(analysisVariables.Stimuli_Data_Corr_Mean,...
     analysisVariables.Stimuli_Data_Perc_Mean,...
-    num_stimuli,triggerNames,...
+    num_stimuli,triggerNames,analysisVariables.TF_REP,...
     analysisVariables.alphaReal,0,1);
 
 p_time = P_stim.ptime;
@@ -1396,10 +1396,13 @@ set(handles.mainAxe,'XTickLabel', xtickMSLabel);
 handles.mainAxe.XLabel.String = 'Time (ms)';
 handles.mainAxe.YLabel.String = 'p-value';
 set(handles.mainAxe,'Box','off');
+
 if isequal(numel(num_stimuli),1)
     condiNames = [triggerNames{num_stimuli(1)}];
-else
+elseif isequal(numel(num_stimuli),2)
     condiNames = [triggerNames{num_stimuli(1)} ' vs ' triggerNames{num_stimuli(2)}];
+else
+    condiNames = 'All Conditions'; 
 end
 handles.graphName.String = ['P-value stimuli factor over time for: ' condiNames];
 set(handles.mainAxe,'XMinorTick','on')
@@ -1447,7 +1450,7 @@ end
 
 [F_stim,~,~] = pStim(analysisVariables.Stimuli_Data_Corr_Mean,...
     analysisVariables.Stimuli_Data_Perc_Mean,...
-    num_stimuli,triggerNames,...
+    num_stimuli,triggerNames,analysisVariables.TF_REP,...
     analysisVariables.alphaReal,0,0);
 
 F_time = F_stim.ftime;
@@ -1536,8 +1539,15 @@ if isequal(numel(handles.GeneralData.selectMe),1) || gt(numel(handles.GeneralDat
         'Condition Select','ListString',condiSelect,'ListSize',[250 300]);
     
     
-    if v
-        handles.GeneralData.selectMe = s;
+    if v 
+        if isequal(size(s,2),2)
+            handles.GeneralData.selectMe = s;
+        else
+            warndlg('Please select only two conditions')
+            return
+        end
+    else
+        return
     end
     guidata(hObject,handles)
 end
@@ -1599,8 +1609,10 @@ if isequal(numel(handles.GeneralData.selectMe),1) || gt(numel(handles.GeneralDat
 else
     num_stimuli = handles.GeneralData.selectMe;
     
-    [~,~,PCA_time] = pStim(analysisVariables.Stimuli_Data_Corr_Mean,analysisVariables.Stimuli_Data_Perc_Mean,...
-        num_stimuli,triggerNames,analysisVariables.alphaReal,1,0);
+    [~,~,PCA_time] = pStim(analysisVariables.Stimuli_Data_Corr_Mean,...
+    analysisVariables.Stimuli_Data_Perc_Mean,...
+    num_stimuli,triggerNames,analysisVariables.TF_REP,...
+    analysisVariables.alphaReal,1,0);
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % Display of p-value of stimuli factor for each selected component
     p_PCA = PCA_time.p;

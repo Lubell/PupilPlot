@@ -77,7 +77,7 @@ Stimulations_names = pPR.Stimulations_names;
 Stimuli_Data_Corr_Mean = pPR.Stimuli_Data_Corr_Mean;
 Stimulations_Data_UnCorr_Mean = pPR.Stimulations_Data_UnCorr_Mean;
 Stimuli_Data_Perc_Mean = pPR.Stimuli_Data_Perc_Mean;
-
+TF_REP = pPR.TF_REP;
 % We've got all the pieces we need 
 % SO save:
 newFile = fileparts(epochProcessFile);
@@ -89,7 +89,7 @@ save([newFile filesep 'Analysis_StageOne_' parentDir '.mat'],'L_stim','Stimulati
     'X_Perc_DataSelected_SD','X_Perc_DataSelected_CI_Above','X_Perc_DataSelected_CI_Below',...
     'X_Corr_DataSelected_SD','X_Corr_DataSelected_CI_Above','X_Corr_DataSelected_CI_Below',...
     'X_Uncorr_DataSelected_SD','X_Uncorr_DataSelected_CI_Above','X_Uncorr_DataSelected_CI_Below',...
-    'F_Sign','F','p_time','F_time','p_sign');
+    'F_Sign','F','p_time','F_time','p_sign','TF_REP');
 
 disp('Done with Analysis')
 success = 1;

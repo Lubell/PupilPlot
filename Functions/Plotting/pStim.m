@@ -1,4 +1,4 @@
-function [F_stim,P_stim,PCA_time] = pStim(Stimuli_Data_Corr_Mean,Stimuli_Data_Perc_Mean,num_stimuli,triggerNames,alphaReal,pca_go,pLock)
+function [F_stim,P_stim,PCA_time] = pStim(Stimuli_Data_Corr_Mean,Stimuli_Data_Perc_Mean,num_stimuli,triggerNames,TF_REP,alphaReal,pca_go,pLock)
 % 
 % clear ('Stimuli_ranks');
 % clear ('COND');
@@ -25,7 +25,7 @@ if 1 % If there are repetitions, the matrix for data analysis is Stimuli_Data_Co
     num_del = zeros (numberOFstimuli,1);
     for stimulus = 1:numberOFstimuli
         for participant = 1:num_participants
-            X_Corr_Sum (participant,stimulus) = sum ((Stimuli_Data_Corr_Mean(participant,:,Stimuli_ranks(stimulus,1)))');
+            X_Corr_Sum (participant,stimulus) = sum((Stimuli_Data_Corr_Mean(participant,:,Stimuli_ranks(stimulus,1)))');
             if X_Corr_Sum (participant,stimulus) ==0
                 num_del (stimulus,1) = num_del (stimulus,1) + 1;
                 participants_del (num_del (stimulus,1),stimulus) = participant;
@@ -97,7 +97,7 @@ end
 
 % Baseline-corrected data
 
-if 1;
+if isequal(TF_REP,1)
     line_start = 1;
     for stimulus = 1:numberOFstimuli
         X_Corr_DataSelected (line_start:num_participants*stimulus,:) = Stimuli_Data_Corr_Mean(:,:,Stimuli_ranks(stimulus,1));
