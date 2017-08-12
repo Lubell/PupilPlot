@@ -22,7 +22,7 @@ function varargout = pupilPlotGUI(varargin)
 
 % Edit the above text to modify the response to help pupilPlotGUI
 
-% Last Modified by GUIDE v2.5 11-Aug-2017 19:21:32
+% Last Modified by GUIDE v2.5 12-Aug-2017 10:11:14
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -246,7 +246,6 @@ handles.triggerInfo = trigTable;
 handles.preProcMenu.Enable = 'off';
 handles.plotMenu.Enable = 'off';
 handles.analysisMenu.Enable = 'off';
-handles.exportToSpreadMenu.Enable = 'off';
 [~,handles] = plotMenuCheck(1,handles);
 disp('PupilPlot Reset!')
 % Update handles structure
@@ -293,11 +292,6 @@ function viewLogMenu_Callback(hObject, eventdata, handles)
 viewLog(handles.log)
 
 
-% --------------------------------------------------------------------
-function exportToSpreadMenu_Callback(hObject, eventdata, handles)
-% hObject    handle to exportToSpreadMenu (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
 
 % --------------------------------------------------------------------
 function quitMenu_Callback(hObject, eventdata, handles)
@@ -517,6 +511,7 @@ if success
     warndlg('PreProccessing Complete!')
     handles.graphName.String = 'PreProccessing Complete!';
     handles.GeneralData.runAnalysisOkay = 1;
+    disp('Preproccessing Finished')
     optVar = handles.log;
     workingD = optVar{1,2};
     % save current values to new prepocessing file
@@ -679,7 +674,6 @@ if success
     handles.plotMenu.Enable = 'on';
     handles.graphName.String = 'Analysis Finished.  Ready to plot.';
     handles.GeneralData.selectMe = 1:length(handles.GeneralData.triggerNames);
-    handles.exportToSpreadMenu.Enable = 'on';
 else
     warndlg('Something isn''t right')
     return
@@ -845,25 +839,28 @@ set(handles.mainAxe,'XTickLabelRotation',0);
 
 % Dirty Data (no corrections all subjects)
 
-num_parts = analysisVariables.num_participants_F(1); % how many participants?
+num_parts = analysisVariables.num_participants_F(1);
+maxSamp = max(size(analysisVariables.Stimulations_All));
 
-foo = max(size(analysisVariables.Stimulations_All)); % how many samples?
-
-scatter(handles.mainAxe,1:foo,analysisVariables.L_stim(1,foo-(foo-1):foo),4,'k','filled') % plot the last 600 (or 10s given 60Hz sampling)
-
-xtickMSLabel = (0:round((foo*sampleRate)/11):foo*sampleRate);
+scatter(handles.mainAxe,1:maxSamp,...
+    analysisVariables.L_stim(1,maxSamp-(maxSamp-1):maxSamp),4,'k','filled') % 
+% tester = analysisVariables.L_stim(1,foo-(foo-1):foo);
+xtickMSLabel = (0:round((maxSamp*sampleRate)/11):maxSamp*sampleRate);
 
 
 hold on; % we will add to plot, rather than replace with new data
 for j = 2:num_parts % repeat for remaining participants
     %foo = max(size(data(j).trial_data(6).CleanPupil)); % how many samples
-    scatter(handles.mainAxe,1:foo,analysisVariables.L_stim(j,foo-(foo-1):foo),4,'k','filled')
+    scatter(handles.mainAxe,1:maxSamp,...
+        analysisVariables.L_stim(j,maxSamp-(maxSamp-1):maxSamp),4,'k','filled')
 end
+
+%
 hold off; % done adding data
 
 handles.mainAxe.XLabel.String = 'Time (ms)';
 handles.mainAxe.YLabel.String = 'Pupil diameter (mm)';
-set(handles.mainAxe,'XTick',0:(foo/10):foo,'XTickLabel',xtickMSLabel); % ticks along x axis
+set(handles.mainAxe,'XTick',0:(maxSamp/10):maxSamp,'XTickLabel',xtickMSLabel); % ticks along x axis
 handles.graphName.String = 'Left pupils of all subjects uncleaned values';
 set(handles.mainAxe,'Box','off', 'FontSize',10);
 set(handles.mainAxe,'XMinorTick','on')
@@ -1800,4 +1797,3 @@ web(url)
 else
     disp('Missing directories.  Made by Jamie Lubell 2017 CC license')
 end
-

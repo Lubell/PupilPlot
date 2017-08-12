@@ -26,7 +26,7 @@ for i = 1:length(checkValues)
                     handlesOut = handles;
                     return
                 else
-                    disp(['Sampling Rate: ' checkOutTable{i,3}])
+                    disp(['Sampling Rate: ' num2str(checkOutTable{i,3})])
                 end
                 
             else
