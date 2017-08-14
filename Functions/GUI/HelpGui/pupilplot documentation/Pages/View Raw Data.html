@@ -15,5 +15,18 @@
  	      	   white-space: pre-wrap;      /* CSS3 */
  	      	   word-wrap: break-word;      /* IE 5.5+ */ }
 	</style></head><body><div class="note" id="View Raw Data"><a name="view raw data"></a><h1>View Raw Data</h1>
-The ability to plot a single patient's <a style="color:#204A87" href="Raw data.html">raw data</a> record 
-</div></body></html>
+      <p>This <a href="Preprocess Menu.html" title="preprocMenu">Preprocess Menu</a> option allows the user to plot a single subject's <a style="color:#204A87" href="Raw data.html">raw data</a> record.</p>
+      <p>The code used to achieve this is almost entirely the work of the authors of <a href="https://sccn.ucsd.edu/eeglab/index.php" title="EEGLAB link" accesskey="2">EEGLAB</a>. In fact the author of <a style="color:#204A87" href="../PupilPlot.html">PupilPlot</a> fears he may have mangled perfectly good code to get it to do what he wanted and apologizes to the creators of <a href="https://sccn.ucsd.edu/eeglab/index.php" title="EEGLAB link" accesskey="2">EEGLAB</a> for what he did to their creation. <a href="References.html" title="ref">References</a></p>
+      <p>With that in mind, when a user selects from the <a href="Preprocess Menu.html" title="preprocMenu">Preprocess Menu</a> &gt; View Raw Data, <a style="color:#204A87" href="../PupilPlot.html">PupilPlot</a> presents the user with a list dialouge that allows the user to select one of the subject files from the working import directory.      </p>
+      <p>Example of Subject List select:</p>
+      <p>	 <img src="viewRawDataPP.png" width="202" height="433" alt="viewSubRaw"> </p>
+      <p>&nbsp;</p>
+      <p>After Selecting one subject's data to plot <a style="color:#204A87" href="../PupilPlot.html">PupilPlot</a> calls <a href="https://sccn.ucsd.edu/eeglab/index.php" title="EEGLAB link" accesskey="2">EEGLAB</a> functions that will plot the raw continuous data, like so:</p>
+      <p>&nbsp;</p>
+      <p><img src="viewDataScrollPP.png" width="800" height="552" alt="viewRawScroll"> </p>
+      <p>&nbsp;</p>
+      <p>If the data has already been preproccesed like the example above, the cleaned interoplated pupil data will also be plotted.</p>
+      <p>The sole functionality of this <a href="Preprocess Menu.html" title="preprocMenu">Preprocess Menu</a> option is to view the raw data of a single subject and aid in defining trigger/annotation events in relation to the data.</p>
+      <p>Return to Preproccessing Menu or <a style="color:#204A87" href="../PupilPlot.html">PupilPlot</a></p>
+	</div>
+	</body></html>
