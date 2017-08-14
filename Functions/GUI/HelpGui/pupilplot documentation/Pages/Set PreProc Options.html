@@ -1,0 +1,52 @@
+<html xmlns:tomboy="http://beatniksoftware.com/tomboy" xmlns:link="http://beatniksoftware.com/tomboy/link" xmlns:size="http://beatniksoftware.com/tomboy/size"><head><META http-equiv="Content-Type" content="text/html; charset=utf-8"><title>Set PreProc Options</title><style type="text/css">
+        
+	body {  }
+	h1 { font-size: xx-large;
+     	     font-weight: bold;
+     	     border-bottom: 1px solid black; }
+	div.note {
+		   position: relative;
+		   display: block;
+		   padding: 5pt;
+		   margin: 5pt; 
+		   white-space: -moz-pre-wrap; /* Mozilla */
+ 	      	   white-space: -pre-wrap;     /* Opera 4 - 6 */
+ 	      	   white-space: -o-pre-wrap;   /* Opera 7 */
+ 	      	   white-space: pre-wrap;      /* CSS3 */
+ 	      	   word-wrap: break-word;      /* IE 5.5+ */ }
+	</style></head><body><div class="note" id="Set PreProc Options"><a name="set preproc options"></a><h1>Set PreProc Options</h1>
+	<img src="preProcGuiSetOptPP.png" alt="preprocGUI" img align="right">
+Set the preprocessing options or parameters for preprocessing.
+If <a style="color:#204A87" href="Import PreProc Options.html">Import PreProc Options</a> was used the values imported will be reflected in the PreProc Options window.
+
+Broken into three categories:
+<ul><li dir="ltr">Cleaning blinks Parameters
+<ul><li dir="ltr">Uses a function from Jackson &amp; Sirosiss 2009 <a style="color:#204A87" href="References.html">References</a>
+</li><li dir="ltr">Input is a smoothing parameter 
+<ul><li dir="ltr">Default is 10
+</li></ul></li><li dir="ltr">Designate whether or not you want to print debug information
+<ul><li dir="ltr">Default is no
+</li></ul></li></ul></li><li dir="ltr">Removing baseline Parameters
+<ul><li dir="ltr">Epoch Length
+<ul><li dir="ltr">In milliseconds and is just the time of interest (not including baseline period)
+</li></ul></li><li dir="ltr">Baseline Length
+<ul><li dir="ltr">In milliseconds and is just the portion of time prior to the epoch (or period of interest) that is to be used as the baseline
+</li></ul></li><li dir="ltr">Location of annotation/trigger relative to baseline and trial
+<ul><li dir="ltr">It is common that sometimes baseline periods are either not designated or have there own trigger/annotation.  To handle different types of researcher styles of denoting when the trial begins, this option exists.
+<ul><li dir="ltr">There is a drop down with the option to select either
+<ul><li dir="ltr">Trigger is located at end of baseline period
+</li><li dir="ltr">Trigger is located at the beginning of the baseline period
+</li></ul></li></ul></li><li dir="ltr">If '<i>Trigger is located at the beginning of the baseline period</i>' is selected the input box next to the drop down becomes editable.  In this box one should enter the amount of time in milliseconds that the trigger occurs before the  epoch or period of interest begins.
+</li></ul></li><li dir="ltr">An box that can not be edited show the total trial time (ms) that is solely the addition of the baseline and epoch length.
+</li></ul></li><li dir="ltr">Set Sample Rate
+<ul><li dir="ltr">Enter the sampling rate that was used when acquiring the data samples.</li></ul></li></ul>
+
+
+Clear Button
+<ul><li dir="ltr">Resets all boxes back to their initial state</li></ul>
+Save and Exit
+<ul><li dir="ltr">Saves the values inputted and closes the window</li></ul>
+
+Return to  <a style="color:#204A87" href="../"../PupilPlot.html">PupilPlot</a>
+
+</div></body></html>

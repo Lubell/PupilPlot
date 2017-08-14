@@ -1,0 +1,42 @@
+<html xmlns:tomboy="http://beatniksoftware.com/tomboy" xmlns:link="http://beatniksoftware.com/tomboy/link" xmlns:size="http://beatniksoftware.com/tomboy/size"><head><META http-equiv="Content-Type" content="text/html; charset=utf-8"><title>Define Triggers</title><style type="text/css">
+        
+	body {  }
+	h1 { font-size: xx-large;
+     	     font-weight: bold;
+     	     border-bottom: 1px solid black; }
+	div.note {
+		   position: relative;
+		   display: block;
+		   padding: 5pt;
+		   margin: 5pt; 
+		   white-space: -moz-pre-wrap; /* Mozilla */
+ 	      	   white-space: -pre-wrap;     /* Opera 4 - 6 */
+ 	      	   white-space: -o-pre-wrap;   /* Opera 7 */
+ 	      	   white-space: pre-wrap;      /* CSS3 */
+ 	      	   word-wrap: break-word;      /* IE 5.5+ */ }
+	</style></head><body><div class="note" id="Define Triggers"><a name="define triggers"></a><h1>Define Triggers</h1>
+This menu option allows users to:
+<ul><li dir="ltr">Define which triggers to segment data around
+</li><li dir="ltr">Open and use already existing trigger definitions
+</li><li dir="ltr">See which annotations are present within the data</li></ul>
+
+Upon selecting the "Define Triggers" <a style="color:#204A87" href="Preprocess Menu.html">Preprocess Menu</a> option the user is met with two prompts:
+
+<ul><li dir="ltr"><a style="color:#204A87" href="Shortest or Longest Data file.html">Shortest or Longest Data file</a>
+</li><li dir="ltr"><a style="color:#204A87" href="Use already saved trigger definitions.html">Use already saved trigger definitions</a> - only if trigger definitions already exist </li></ul>
+
+The main window the "Define Triggers" option is comprised of three areas:
+ - A table (on the left side of the window) that lists the triggers/annotations found within the selected subject's data record
+<ul><li dir="ltr">The left column contains the triggers/annotations as they were saved within the <a style="color:#204A87" href="Raw data.html">raw data</a> file
+</li><li dir="ltr">The right column contains drop downs for each trigger that allows the user to tell the program to either associate the trigger on that line with a certain condition or to ignore it</li></ul>
+- Eight windows where each window represents a different experimental condition.
+<ul><li dir="ltr">Each window is titled (at the start) as Condition A, Condition B, .... , Condition G.  
+</li><li dir="ltr">After designating which triggers/annotations are associated with a particular condition in the table on the far left of the window, pressing the "Show Conditions by Group"  will display all annotations labeled as Condition A in the "Condition A:" text box and will ask the user what the name of the condition is.  This will continue on for each condition that has been defined.
+<ul><li dir="ltr">The name that the user chooses to represent a group of annotations (or condition), will be written into the data record and will show up in the left hand window's first column that displays the trigger names.
+</li><li dir="ltr">At any time the conditions can be showed by group and changes or new selections can be made, by pressing the "Show Conditions by Group" button will update the condition boxes and the condition names can be changed or kept.
+</li></ul></li><li dir="ltr">After the user is finished defining the triggers, the "Save Trigger Definitions and Close" should be pressed.  This will implement the trigger definitions and <a style="color:#204A87" href="../PupilPlot.html">PupilPlot</a>, when preprocessing the data, will use these definitions to break the data into condition groups.
+<ul><li dir="ltr"> The trigger definitions should be considered as what denotes a trial</li></ul></li></ul>
+
+Return to <a style="color:#204A87" href="../PupilPlot.html">PupilPlot</a></div></body></html>
+
+</div></body></html>

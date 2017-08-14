@@ -1,0 +1,53 @@
+<html xmlns:tomboy="http://beatniksoftware.com/tomboy" xmlns:link="http://beatniksoftware.com/tomboy/link" xmlns:size="http://beatniksoftware.com/tomboy/size"><head><META http-equiv="Content-Type" content="text/html; charset=utf-8"><title>Preprocess Functions</title><style type="text/css">
+        
+	body {  }
+	h1 { font-size: xx-large;
+     	     font-weight: bold;
+     	     border-bottom: 1px solid black; }
+	div.note {
+		   position: relative;
+		   display: block;
+		   padding: 5pt;
+		   margin: 5pt; 
+		   white-space: -moz-pre-wrap; /* Mozilla */
+ 	      	   white-space: -pre-wrap;     /* Opera 4 - 6 */
+ 	      	   white-space: -o-pre-wrap;   /* Opera 7 */
+ 	      	   white-space: pre-wrap;      /* CSS3 */
+ 	      	   word-wrap: break-word;      /* IE 5.5+ */ }
+	</style></head><body><div class="note" id="Preprocess Functions"><a name="preprocess functions"></a><h1>Preprocess Functions</h1>
+
+After successfully completing the <a style="color:#204A87" href="Import Functions.html">Import Functions</a> the newly imported files are loaded in <a style="color:#204A87" href="../PupilPlot.html">PupilPlot</a> and ready to be preprocessed.
+
+In the demo dataset there were many triggers (also called annotations, henceforth annotations will be referred to as triggers) inserted into the data file while the data was being collected.  The only triggers that are of interest for the purposes of this example are:
+
+<ul><li dir="ltr">ControlC
+</li><li dir="ltr">GlareC
+</li><li dir="ltr">GlareP
+</li><li dir="ltr">ControlP</li></ul>
+
+and the details of the experiment were such that the actual period of interest was 3500 milliseconds long and that the baseline period was 1000 milliseconds long.  The sampling rate of the eye tracker was set at 60 Hz.
+
+First the preprocessing options must be set.  Go to <a style="color:#204A87" href="Preprocess Menu.html">Preprocess Menu</a> &gt; <a style="color:#204A87" href="Set PreProc Options.html">Set PreProc Options</a> this will open a new window.
+
+What the different settings or parameters mean and how to change them is detailed in <a style="color:#204A87" href="Set PreProc Options.html">Set PreProc Options</a> section.  For the purposes of this walk through we are only interested in setting that parameters to reflect the experimental details.
+
+Here it can be seen that the default smoothing parameter of 10 is being used, that the epoch length has been entered as 3500 ms, the baseline period of 1000 ms has been entered, that the trial length is 4500 ms, triggers are located at the end of the baseline period has been selected, and the sample rate is 60 Hz.
+
+preProcGuiSetOptPP_Example3.png
+
+By pressing the 'Save and Exit' button <a style="color:#204A87" href="../PupilPlot.html">PupilPlot</a> store the values entered and will pass them into the <a style="color:#204A87" href="Preprocess Data.html">Preprocess Data</a> functions when run.
+
+Having set the preprocessing options the triggers must be defined.  By clicking the <a style="color:#204A87" href="Define Triggers.html">Define Triggers</a> menu option under the <a style="color:#204A87" href="Preprocess Menu.html">Preprocess Menu</a>, the Trigger Importer window will open.  
+
+All instances of ControlC will be defined as Trigger Event A, instances of GlareC will be defined as Trigger Event B, instances of GlareP will be defined as Trigger Event C, instances of ControlP will be defined as Trigger Event D.  pressing the 'Show Conditions by Group' button the Trigger Importer will ask for a condition name for each group of defined triggers.  As so:
+
+triggerDefinitionPP.png
+
+Clicking the 'Save Trigger Definitions and Close' button will bring us back to <a style="color:#204A87" href="../PupilPlot.html">PupilPlot</a>.
+
+Having set the preprocess options and defined the triggers <a style="color:#204A87" href="Preprocess Data.html">Preprocess Data</a> can be selected.  <a style="color:#204A87" href="../PupilPlot.html">PupilPlot</a> will let you know if everything went according to plan and the Graph: title will reflect this as well.
+
+
+The other options that can be used under the <a style="color:#204A87" href="Preprocess Menu.html">Preprocess Menu</a> can be read about on their help pages.
+
+Return to <a style="color:#204A87" href="Step by Step Walk Through.html">Step by Step Walk Through</a> or <a style="color:#204A87" href="../PupilPlot.html">PupilPlot</a></div></body></html>
