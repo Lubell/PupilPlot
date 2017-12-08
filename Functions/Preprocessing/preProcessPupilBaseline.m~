@@ -108,7 +108,7 @@ num_stimuli=length(Stimuli_presentations_text);%genData.stimNum; % number of tri
 
 
 TF_REP = 0;
-for matchers = 1:num_stimuli %num_stimulations
+for matchers = 1:num_stimulations
     if Stim_rep{matchers}>=2
         TF_REP = 1;
     end
@@ -209,7 +209,7 @@ if TF_REP
     
 else
     
-    disp('Making a mean of Conditions...')
+    disp('Averaging repeated Conditions...')
     
     
     
