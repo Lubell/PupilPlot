@@ -108,7 +108,7 @@ num_stimuli=length(Stimuli_presentations_text);%genData.stimNum; % number of tri
 
 
 TF_REP = 0;
-for matchers = 1:num_stimuli %num_stimulations
+for matchers = 1:num_stimulations
     if Stim_rep{matchers}>=2
         TF_REP = 1;
     end
@@ -204,36 +204,6 @@ if TF_REP
                 end
             end
         end
-    end
-    
-    
-else
-    
-    disp('Making a mean of Conditions...')
-    
-    
-    
-    for i = 1:length(Stimuli_presentations_text)
-        Stimuli_presentations(i)=Stimuli_presentations_text{i};
-    end
-    
-    % ------- Baseline-Corrected data
-    First_Stimulation = 1;
-    rep=zeros(num_participants,num_stimuli);
-    
-    
-    %Sum of the repetitions(only good quality recordings)
-    for stimulus = 1:num_stimuli
-        for participant = 1:num_participants
-            for Stimulation = First_Stimulation:First_Stimulation+Stimuli_presentations(stimulus)-1
-                if sum(stimulationsCorrectedMM(participant,:,Stimulation)) ~= 0
-                    stimuliCorrectedMean(participant,:,stimulus) = stimuliCorrectedMean(participant,:,stimulus) + stimulationsCorrectedMM(participant,:,Stimulation);
-                    stimulationsUncorrectedMean(participant,:,stimulus) = stimulationsUncorrectedMean(participant,:,stimulus) + stimulationsUncorrectedMM(participant,:,Stimulation);
-                    rep(participant,stimulus) = rep(participant,stimulus) +1;
-                end
-            end
-        end
-        First_Stimulation = Stimuli_presentations(stimulus) + First_Stimulation;
     end
 end
 
