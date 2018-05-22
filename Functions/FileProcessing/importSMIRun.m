@@ -14,6 +14,9 @@ if isfield(importCheckStruct,'importFolder')
     
     checkOutTable = handles.log;
     importFolder = handles.GeneralData.importFolder;
+    lPi = [];
+    rPi = [];
+    
     
     if isequal(renameOption,0)
         % no new name and import required
@@ -25,7 +28,7 @@ if isfield(importCheckStruct,'importFolder')
             if strcmpi(ext,'.tsv')
                 [trig,Lpupil,Rpupil] = importTobiiTSV([importFolder filesep files2import{i}]);
             else
-                [trig,Lpupil,Rpupil] = importSMITXT([importFolder filesep files2import{i}]);
+                [trig,Lpupil,Rpupil,lPi,rPi] = importSMITXT([importFolder filesep files2import{i}],lPi,rPi);
                 
             end
             oldName = files2import{i};
@@ -36,7 +39,7 @@ if isfield(importCheckStruct,'importFolder')
         
         checkOutTable{1,1} = 1;
         checkOutTable{1,2} = workingDirectory;
-    
+        
     else
         % no new name and just setting dir
         
@@ -56,3 +59,5 @@ else
     return
     
 end
+
+

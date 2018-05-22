@@ -1,4 +1,4 @@
-function [Message,Lpupil,Rpupil] = importSMITXT(filename, startRow, endRow)
+function [Message,Lpupil,Rpupil,lPi,rPi] = importSMITXT(filename,lPi,rPi,startRow, endRow)
 %IMPORTFILE Import numeric data from a text file as column vectors.
 %   [LRAWXPX,LRAWYPX,RRAWXPX,RRAWYPX,LDIAXPX,LDIAYPX,LMAPPEDDIAMETERMM,RDIAXPX,RDIAYPX,RMAPPEDDIAMETERMM]
 %   = IMPORTFILE(FILENAME) Reads data from text file FILENAME for the
@@ -17,7 +17,7 @@ function [Message,Lpupil,Rpupil] = importSMITXT(filename, startRow, endRow)
 
 %% Initialize variables.
 delimiter = '\t';
-if nargin<=2
+if nargin<=4
     startRow = 39;
     endRow = inf;
 end
@@ -63,9 +63,37 @@ fclose(fileID);
 
 %% Allocate imported array to column variable names
 Message = dataArray{:, 1};
-Lpupil = dataArray{:, 7};
-Rpupil = dataArray{:, 10};
 
+
+if isempty(lPi) && isempty(rPi)
+    
+    for colT = 1:length(dataArray)
+        colName = dataArray{1,colT}{1,1};
+        
+        if strcmpi(colName,'L Mapped Diameter [mm]')
+            lPi = colT;
+        elseif strcmpi(colName,'R Mapped Diameter [mm]')
+            rPi = colT;
+        end
+    end
+    
+    if isempty(lPi) || isempty(rPi)
+        prompt = {'Enter Column # for Left Pupil:','Enter Column # for Right Pupil:'};
+        dlg_title = 'Input Pupil Columns';
+        num_lines = 1;
+        def = {'1','2'};
+        answer = inputdlg(prompt,dlg_title,num_lines,def);
+        
+        lPi = str2double(answer{1,1});
+        rPi = str2double(answer{2,1});
+    end
+    
+    
+end
+
+
+Lpupil = dataArray{:, lPi};
+Rpupil = dataArray{:, rPi};
 
 
 % find blanks
@@ -87,10 +115,10 @@ clipR = zeros(1,length(Rpupil));
 clipL = zeros(1,length(Lpupil));
 for j = 1:length(clipR)
     clipR(j) = str2double(Lpupil{j});
-    clipL(j) = str2double(Rpupil{j}); 
+    clipL(j) = str2double(Rpupil{j});
 end
 for j = 1:length(Message)
- % remove raw values from Message
+    % remove raw values from Message
     tempMess = Message{j};
     tooBee = strfind(tempMess,'# Message:');
     if isempty(tooBee)
@@ -98,14 +126,14 @@ for j = 1:length(Message)
     else
         valFound = strfind(tempMess,'alidation');
         calFound = strfind(tempMess,'alibration');
-        if  ~isempty(valFound) || ~isempty(calFound) 
+        if  ~isempty(valFound) || ~isempty(calFound)
             Message{j} = 'Calibration';
         else
             exMess = Message{j};
             Message{j} = exMess(12:end);
         end
     end
-
+    
 end
 
 Lpupil = clipL;
