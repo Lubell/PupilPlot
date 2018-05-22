@@ -60,7 +60,8 @@ if isequal(optVar{3,1},1)
     nSamples = max(size(eyeData(1).Lpupil));
     L = eyeData(1).Lpupil;
     R = eyeData(1).Rpupil;
-    eyeData(1).cleanPupil = CleanLREye(1,nSamples,L,R,fr,display);
+    eyeData(1).cleanPupil = CleanLREye(1,nSamples,L,R,fr,display,genData.fs);
+    disp(['Cleaned ' samplesEye(1).name])
     
 else
     disp('Making right pupil dominate...')
@@ -71,10 +72,11 @@ end
 for i = 2:num_participants
     nSamples = max(size(eyeData(i).Lpupil));
     if isequal(optVar{3,1},1)
-        eyeData(i).cleanPupil = CleanLREye(1,nSamples,eyeData(i).Lpupil,eyeData(i).Rpupil,fr, display);
+        eyeData(i).cleanPupil = CleanLREye(1,nSamples,eyeData(i).Lpupil,eyeData(i).Rpupil,fr, display,genData.fs);
     else
         eyeData(i).cleanPupil = eyeData(i).Rpupil;
     end
+    disp(['Cleaned ' samplesEye(i).name])
 end
 
 

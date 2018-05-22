@@ -354,18 +354,20 @@ if isequal(checkOutTable{1,1},1)
     handles.GeneralData.AutoShort = checkOutTable{5,3};
     checkOutTableTI = checkOutTable;
     slprompt = ['The shortest data record is: ' checkOutTable{5,2} '. Length is: ' num2str(checkOutTable{5,3})...
-        ' The Longest data record is: ' longestGuy{2} '. Length is: ' num2str(longestGuy{1})...
-        '.  You can change the shortest value by removing it from the Import folder and rerunning. Which data record would you like to use for Trigger Importation?'];
+        ' For reference the Longest data record is: ' longestGuy{2} '. Length is: ' num2str(longestGuy{1})...
+        '.  If this is an error remove the shortest data record from the Import folder and rerun.'];
     
-    choice = questdlg(slprompt,'Info and quest','Longest Rec','Shortest Rec','Longest Rec');
+    choice = questdlg(slprompt,'Info and quest','Okay','Cancel','Okay');
     switch choice
         case 'Longest Rec'
             checkOutTable{5,2} = ['Shortest Rec.: ' longestGuy{2}];
             checkOutTable{5,3} = longestGuy{1};
             checkOutTableTI{7,1} = longestGuy{2};
-        otherwise
+        case 'Okay'
             checkOutTableTI{7,1} = checkOutTable{5,2};
             checkOutTable{5,2} = ['Shortest Rec.: '  checkOutTable{5,2}];
+        otherwise
+            return
     end
     
     gennyData = handles.GeneralData;
@@ -376,7 +378,15 @@ if isequal(checkOutTable{1,1},1)
     end
     
     
-    TriggerImporter(checkOutTableTI);
+    workingD = checkOutTableTI{1,2};
+    alreadyNamed = exist([workingD filesep 'trigger_definitions.mat'],'file');
+    if alreadyNamed>=2
+        selection = questdlg('Use already saved trigger definitions?','Load?', ...
+            'Use trigger definitions as is','Use trigger definitions and edit','No','Use trigger definitions as is');
+    else
+        selection = 'No';
+    end
+    TriggerImporter(checkOutTableTI,selection);
     
     handles.log = checkOutTable;
     

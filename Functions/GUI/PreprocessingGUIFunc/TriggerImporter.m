@@ -57,51 +57,53 @@ handles.output = hObject;
 guidata(hObject, handles);
 optVar = varargin{1,1};
 
+
 workingD = optVar{1,2};
 buildAnew = 0;
-alreadyNamed = exist([workingD filesep 'trigger_definitions.mat'],'file');
-if alreadyNamed>=2
-    selection = questdlg('Use already saved trigger definitions?','Load?', ...
-        'Use trigger definitions as is','Use trigger definitions and edit','No','Use trigger definitions as is');
-    switch selection
-        case 'Use trigger definitions and edit'
-            load([workingD filesep 'trigger_definitions.mat'])
-            for i = 1:length(ttStruct);
-                if isequal(i,1)
-                    handles.con1.String = ttStruct(i).name;
-                elseif isequal(i,2)
-                    handles.con2.String = ttStruct(i).name;
-                elseif isequal(i,3)
-                    handles.con3.String = ttStruct(i).name;
-                elseif isequal(i,4)
-                    handles.con4.String = ttStruct(i).name;
-                elseif isequal(i,5)
-                    handles.con5.String = ttStruct(i).name;
-                elseif isequal(i,6)
-                    handles.con6.String = ttStruct(i).name;
-                elseif isequal(i,7)
-                    handles.con7.String = ttStruct(i).name;
-                elseif isequal(i,8)
-                    handles.con8.String = ttStruct(i).name;
-                end
-                
-                
+selection = varargin{1,2};
+
+
+
+
+switch selection
+    case 'Use trigger definitions and edit'
+        load([workingD filesep 'trigger_definitions.mat'])
+        for i = 1:length(ttStruct);
+            if isequal(i,1)
+                handles.con1.String = ttStruct(i).name;
+            elseif isequal(i,2)
+                handles.con2.String = ttStruct(i).name;
+            elseif isequal(i,3)
+                handles.con3.String = ttStruct(i).name;
+            elseif isequal(i,4)
+                handles.con4.String = ttStruct(i).name;
+            elseif isequal(i,5)
+                handles.con5.String = ttStruct(i).name;
+            elseif isequal(i,6)
+                handles.con6.String = ttStruct(i).name;
+            elseif isequal(i,7)
+                handles.con7.String = ttStruct(i).name;
+            elseif isequal(i,8)
+                handles.con8.String = ttStruct(i).name;
             end
             
             
-            handles.ExtraStuff.ttStruct = ttStruct;
-            handles.uitable1.Data = dataFromTable;
-            buildAnew = 1;
-            
-        case 'Use trigger definitions as is'
-            load([workingD filesep 'trigger_definitions.mat'])
-            
-            save_ImportStats(optVar,ttStruct,dataFromTable,handles)
-            warndlg('Already defined trigger definitions loaded')
-            return
-            
-    end
+        end
+        
+        
+        handles.ExtraStuff.ttStruct = ttStruct;
+        handles.uitable1.Data = dataFromTable;
+        buildAnew = 1;
+        
+    case 'Use trigger definitions as is'
+        load([workingD filesep 'trigger_definitions.mat'])
+        
+        save_ImportStats(optVar,ttStruct,dataFromTable,handles)
+        warndlg('Already defined trigger definitions loaded')
+        return
+        
 end
+
 
 if ~buildAnew
     
@@ -213,8 +215,10 @@ workingD = optVar{1,2};
 
 
 primD = dir([workingD filesep '*_IMP.mat']);
+f = waitbar(0,'Updating Triggers Definitions');
 
 for sub = 1:length(primD)
+    waitbar(sub/length(primD),f,['Updating Triggers: ' primD(sub).name]);
     load([workingD filesep primD(sub).name])
     for i = 1:length(ttStruct)
         curCon = ttStruct(i).events;
@@ -225,6 +229,7 @@ for sub = 1:length(primD)
                 end
             end
         end
+        
     end
     
     if exist('C_pupil','var')
@@ -232,6 +237,7 @@ for sub = 1:length(primD)
     else 
         save([workingD filesep primD(sub).name],'Lpupil','Rpupil','trig')
     end
+    
 end
 
 
@@ -253,6 +259,7 @@ dataFromTable = dataTable;
 
 % cleanup data from table?
 save([workingD filesep 'trigger_definitions.mat'],'ttStruct','occurrances','dataFromTable')
+close(f)
 uiresume(handles.figure1)
 
 
