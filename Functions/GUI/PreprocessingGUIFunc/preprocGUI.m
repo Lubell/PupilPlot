@@ -82,6 +82,16 @@ if isequal(checkOutTable{4,1},1)
     % populate the windows with preExisting info
     handles.cleanSmthParam.String = num2str(checkOutTable{3,3});
     
+     deBUGG = strfind(checkOutTable{3,2},'off');
+    if isempty(deBUGG)
+        display=1; % debug info (0 = off)
+    else
+        display=0;
+    end
+    
+    
+    handles.cleanDebug.Value =display;
+    
     handles.epochSize.String  = num2str(trialLine);
     handles.baselineSize.String = num2str(baseLine);
     
@@ -171,6 +181,8 @@ onORoff = get(hObject,'Value');
 
 if onORoff
    handles.cleanValues{2} = 'debug on'; 
+else
+    handles.cleanValues{2} = 'debug off'; 
 end
 
 guidata(hObject,handles)
@@ -319,6 +331,8 @@ function doneOptSet_Callback(hObject, eventdata, handles)
 
 checkOutTable = handles.log;
 fs = handles.fsValues;
+
+
 
 % grab the cleaning values
 cleanParam = handles.cleanValues;
