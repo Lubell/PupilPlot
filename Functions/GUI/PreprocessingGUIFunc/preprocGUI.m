@@ -22,7 +22,7 @@ function varargout = preprocGUI(varargin)
 
 % Edit the above text to modify the response to help preprocGUI
 
-% Last Modified by GUIDE v2.5 04-Aug-2017 15:45:35
+% Last Modified by GUIDE v2.5 23-May-2018 09:20:53
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -68,14 +68,10 @@ if isequal(checkOutTable{4,1},1)
     handles.cleanValues = {checkOutTable{3,1},checkOutTable{3,2},checkOutTable{3,3}};
     
     trialOpts = checkOutTable{4,2};
-    beforeT = strfind(trialOpts,'BT:');
-    blineT =  strfind(trialOpts,',BL:');
-    trialTime = strfind(trialOpts,',T:');
+    baseLineOpts = checkOutTable{4,3};
     
-    beforeTime = str2double(trialOpts(beforeT+3:blineT-1))*1000;
-    trialLine = str2double(trialOpts(trialTime+3:end))*1000;
-    baseLine = str2double(trialOpts(blineT+4:trialTime-1));
-    handles.baseLineTimes = {checkOutTable{4,1},trialLine,baseLine,beforeTime};
+    handles.baseLineTimes = {checkOutTable{4,1},trialOpts,baseLineOpts,0};
+    handles.baseLineTimes = {1,{0,0},{0,0},0};
     
     handles.fsValues = {checkOutTable{2,1},checkOutTable{2,2},checkOutTable{2,3}};
     
@@ -92,23 +88,19 @@ if isequal(checkOutTable{4,1},1)
     
     handles.cleanDebug.Value =display;
     
-    handles.epochSize.String  = num2str(trialLine);
-    handles.baselineSize.String = num2str(baseLine);
     
-    if isequal(num2str(beforeTime),0)
-        handles.offSetSelect.Value = 1;
-        handles.offsetSize.Enable = 'off';
-    end
-    
-    handles.totalTrial.String = num2str(trialLine+baseLine);
-    
-    handles.offsetSize.String = num2str(beforeTime);
+    handles.epochSize.String  = num2str(trialOpts(1)*1000);
+    handles.epochEnd.String =  num2str(trialOpts(2)*1000);
+    handles.baseLineStart.String = num2str(baseLineOpts(1)*1000);
+    handles.baseLineEND.String = num2str(baseLineOpts(2)*1000);
+    trialLength = numel((trialOpts(1)*1000):(trialOpts(2)*1000))-1;
+    handles.totalTrial.String = num2str(trialLength);
     
     handles.setSample.String= num2str(checkOutTable{2,3});
 else
     % set the basic values
-    handles.cleanValues = {1,'debug off',10};
-    handles.baseLineTimes = {1,0,0,0};
+    handles.cleanValues = {1,'debug off',4};
+    handles.baseLineTimes = {1,{0,0},{0,0},0};
     handles.fsValues = {0,0,0};
 end
 
@@ -132,6 +124,7 @@ function varargout = preprocGUI_OutputFcn(hObject, eventdata, handles)
 % Get default command line output from handles structure
 
 varargout{1} = handles.log;
+varargout{2} = handles.closeType;
 delete(hObject)
 
 
@@ -200,16 +193,16 @@ function epochSize_Callback(hObject, eventdata, handles)
 answer = str2double(get(hObject,'String'));
 
 if ~isempty(answer)
-    handles.baseLineTimes{2} = answer;
-    if isequal(answer,0)
-        handles.baseLineTimes{1} = 0;
-    else
-        handles.baseLineTimes{1} = 1;
-    end
-    handles.totalTrial.String = str2double(handles.epochSize.String)+str2double(handles.baselineSize.String);
+    handles.baseLineTimes{1,2}{1,1} = answer;
     guidata(hObject, handles);
+    % grab the epochEnd value if it is 
+    epochEndVal = str2double(handles.epochEnd.String);
+    if ~isempty(epochEndVal) || ~isequal(epochEndVal,0)
+        handles.totalTrial.String = numel(str2double(handles.epochSize.String):str2double(handles.epochEnd.String))-1;
+    end
+    
 end
-
+guidata(hObject, handles);
 
 % --- Executes during object creation, after setting all properties.
 function epochSize_CreateFcn(hObject, eventdata, handles)
@@ -224,28 +217,58 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 
-
-function baselineSize_Callback(hObject, eventdata, handles)
-% hObject    handle to baselineSize (see GCBO)
+function epochEnd_Callback(hObject, eventdata, handles)
+% hObject    handle to epochEnd (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of baselineSize as text
-%        str2double(get(hObject,'String')) returns contents of baselineSize as a double
+% Hints: get(hObject,'String') returns contents of epochEnd as text
+%        str2double(get(hObject,'String')) returns contents of epochEnd as a double
+answer = str2double(get(hObject,'String'));
 
+if ~isempty(answer)
+    handles.baseLineTimes{1,2}{1,2} = answer;
+    guidata(hObject, handles);
+    % grab the epochEnd value if it is 
+    epochStartVal = str2double(handles.epochSize.String);
+    if ~isempty(epochStartVal)
+        handles.totalTrial.String = numel(str2double(handles.epochSize.String):str2double(handles.epochEnd.String))-1;
+    end
+    guidata(hObject, handles);
+end
+
+% --- Executes during object creation, after setting all properties.
+function epochEnd_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to epochEnd (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+% --- Executes during object creation, after setting all properties.
+function baseLineStart_Callback(hObject, eventdata, handles)
+% hObject    handle to baseLineStart (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of baseLineStart as text
+%        str2double(get(hObject,'String')) returns contents of baseLineStart as a double
 
 answer = str2double(get(hObject,'String'));
 
 if ~isempty(answer)
-    handles.baseLineTimes{3} = answer;
-    handles.totalTrial.String = str2double(handles.epochSize.String)+str2double(handles.baselineSize.String);
-    guidata(hObject, handles);
+    handles.baseLineTimes{1,3}{1,1} = answer;
 end
+ guidata(hObject, handles);
 
 
 % --- Executes during object creation, after setting all properties.
-function baselineSize_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to baselineSize (see GCBO)
+function baseLineStart_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to baseLineStart (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -257,27 +280,23 @@ end
 
 
 
-function offsetSize_Callback(hObject, eventdata, handles)
-% hObject    handle to offsetSize (see GCBO)
+function baseLineEnd_Callback(hObject, eventdata, handles)
+% hObject    handle to baseLineEnd (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of offsetSize as text
-%        str2double(get(hObject,'String')) returns contents of offsetSize as a double
-
-
+% Hints: get(hObject,'String') returns contents of baseLineEnd as text
+%        str2double(get(hObject,'String')) returns contents of baseLineEnd as a double
 answer = str2double(get(hObject,'String'));
 
 if ~isempty(answer)
-    handles.baseLineTimes{4} = answer;
-    guidata(hObject, handles);
+    handles.baseLineTimes{1,3}{1,2} = answer;
 end
-
-
+ guidata(hObject, handles);
 
 % --- Executes during object creation, after setting all properties.
-function offsetSize_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to offsetSize (see GCBO)
+function baseLineEnd_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to baseLineEnd (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -287,6 +306,24 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
     set(hObject,'BackgroundColor','white');
 end
 
+
+function totalTrial_Callback(hObject, eventdata, handles)
+% hObject    handle to totalTrial (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+% --- Executes during object creation, after setting all properties.
+function totalTrial_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to totalTrial (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
 
 
 function setSample_Callback(hObject, eventdata, handles)
@@ -306,8 +343,6 @@ if ~isempty(answer)
 end
 
 
-
-
 % --- Executes during object creation, after setting all properties.
 function setSample_CreateFcn(hObject, eventdata, handles)
 % hObject    handle to setSample (see GCBO)
@@ -319,7 +354,6 @@ function setSample_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
-
 
 
 % --- Executes on button press in doneOptSet.
@@ -346,14 +380,17 @@ checkOutTable{3,3} = cleanParam{3};
 blT = handles.baseLineTimes;
 
 
-trialT = blT{2}/1000;
-baseLineT = blT{3};
-offset = blT{4}/1000;
+trialTStart = blT{1,2}{1,1}/1000;
+trialTEnd = blT{1,2}{1,2}/1000;
+
+baseLineTStart = blT{1,3}{1,1}/1000;
+baseLineTEnd = blT{1,3}{1,2}/1000;
+
 
 
 checkOutTable{4,1} = blT{1};
-checkOutTable{4,2} = ['BT:' num2str(offset) ',BL:' num2str(baseLineT) ',T:' num2str(trialT)];
-checkOutTable{4,3} = '      ~   ';
+checkOutTable{4,2} = [trialTStart trialTEnd];
+checkOutTable{4,3} = [baseLineTStart baseLineTEnd];
 
 % sample rate set
 checkOutTable{2,1} = fs{1};
@@ -364,6 +401,7 @@ checkOutTable{2,3} = fs{3};
 
 
 handles.log = checkOutTable;
+handles.closeType = 1;
 guidata(hObject,handles)
 uiresume(handles.figure1)
 
@@ -375,18 +413,19 @@ function clearOptBoxes_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-handles.cleanSmthParam.String = '10';
+handles.cleanSmthParam.String = '4';
 
 handles.epochSize.String  = '0';
-handles.baselineSize.String = '0';
-handles.offsetSize.String = '0';
+handles.epochEnd.String = '0';
+handles.baseLineStart.String = '0';
+handles.baseLineEND.String = '0';
 
 handles.setSample.String= '';
 handles.cleanDebug.Value = 0;
 
 % set the basic values back to zero
-handles.cleanValues = {1,'debug off',10};
-handles.baseLineTimes = {1,0,0,0};
+handles.cleanValues = {1,'debug off',4};
+handles.baseLineTimes = {1,{0,0},{0,0},0};
 handles.fs = {0,0,0};
 
 
@@ -407,6 +446,8 @@ choice = questdlg('Close without saving?', ...
 % Handle response
 switch choice
     case 'Exit-no save'
+        handles.closeType = 0;
+        guidata(hObject,handles)
         uiresume(handles.figure1)
     case 'Exit-save'
         checkOutTable = handles.log;
@@ -424,14 +465,17 @@ switch choice
         blT = handles.baseLineTimes;
         
         
-        trialT = blT{2}/1000;
-        baseLineT = blT{3};
-        offset = blT{4}/1000;
+        trialTStart = blT{1,2}{1,1}/1000;
+        trialTEnd = blT{1,2}{1,2}/1000;
+        
+        baseLineTStart = blT{1,3}{1,1}/1000;
+        baseLineTEnd = blT{1,3}{1,2}/1000;
+        
         
         
         checkOutTable{4,1} = blT{1};
-        checkOutTable{4,2} = ['BT:' num2str(offset) ',BL:' num2str(baseLineT) ',T:' num2str(trialT)];
-        checkOutTable{4,3} = '      ~   ';
+       checkOutTable{4,2} = [trialTStart trialTEnd];
+       checkOutTable{4,3} = [baseLineTStart baseLineTEnd];
         
         
         % sample rate set
@@ -442,6 +486,7 @@ switch choice
         
         
         handles.log = checkOutTable;
+        handles.closeType = 1;
         guidata(hObject,handles)
         uiresume(handles.figure1)
     case 'Cancel'
@@ -449,63 +494,10 @@ switch choice
 end
 
 
-% --- Executes on selection change in offSetSelect.
-function offSetSelect_Callback(hObject, eventdata, handles)
-% hObject    handle to offSetSelect (see GCBO)
+
+
+% --- Executes on button press in helpButton.
+function helpButton_Callback(hObject, eventdata, handles)
+% hObject    handle to helpButton (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-
-% Hints: contents = cellstr(get(hObject,'String')) returns offSetSelect contents as cell array
-%        contents{get(hObject,'Value')} returns selected item from offSetSelect
-
-
-offSetValue = handles.offSetSelect.Value;
-
-if isequal(1,offSetValue)
-    handles.baseLineTimes{4} = 0;
-    handles.offsetSize.Enable = 'off';
-    handles.offsetSize.String = '0';
-else
-    handles.offsetSize.Enable = 'on';
-end
-
-guidata(hObject,handles)
-    
-
-
-
-% --- Executes during object creation, after setting all properties.
-function offSetSelect_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to offSetSelect (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: popupmenu controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-
-
-function totalTrial_Callback(hObject, eventdata, handles)
-% hObject    handle to totalTrial (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'String') returns contents of totalTrial as text
-%        str2double(get(hObject,'String')) returns contents of totalTrial as a double
-
-
-% --- Executes during object creation, after setting all properties.
-function totalTrial_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to totalTrial (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
