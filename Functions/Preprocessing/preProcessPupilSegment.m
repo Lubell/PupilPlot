@@ -10,10 +10,7 @@ if size(varargin,2)>=2
     % necessary variables passed in
     optVar = varargin{1};
     genData = varargin{2};
-    trigOffSet = varargin{3};
-    interestLine= varargin{4};
-    baseLine= varargin{5};
-    
+    interestLine = varargin{3};    
 else
     pathIMPFolder = varargin{1};
     if strcmp(pathIMPFolder(end),filesep)
@@ -84,7 +81,10 @@ triggerNames = Stimi_names(:,1);
 disp('Segmenting into trials...');
 
 
-StimulationsAll = zeros(num_participants,interestLine+baseLine,num_total_trigs); % getting uncorrected trial plot for comparing
+StimulationsAll = zeros(num_participants,numel(interestLine(1):interestLine(2))-1,num_total_trigs); % getting uncorrected trial plot for comparing
+
+% Offset?  For now no, but perhaps we'll encounter it later
+trigOffSet=0;
 
 for i = 1:num_participants
     outerTestLoop = 1;
@@ -104,20 +104,20 @@ for i = 1:num_participants
         
         currentEye = eyeData(i).cleanPupil;
         
-        if (indexQT(end)+interestLine)>length(currentEye)+1
+        if (indexQT(end)+interestLine(2))>length(currentEye)+1
             errorTimeMsg = ['Trial length too long (Subject#: ' num2str(i) '), samples = ' num2str(length(currentEye)) ' and tried to grab sample: ' num2str(indexQT(end)+interestLine)];
             error(errorTimeMsg)
-        elseif indexQT(1)-baseLine<=0
-            errorTimeMsg = ['Baseline period too long, trigger @ sample ' num2str(indexQT(1)) ' and tried to grab sample: ' num2str((indexQT(1)-2)-baseLine+1)];
+        elseif indexQT(1)+interestLine(1)<=0
+            errorTimeMsg = ['Baseline period too long, trigger @ sample ' num2str(indexQT(1)) ' and tried to grab sample: ' num2str((indexQT(1)-2)+interestLine(1)+1)];
             error(errorTimeMsg)
         end
         
         
         for j = 1:sum(allQT)
-            eyeData(i).Kind(j).typeT(qt).trial = currentEye(indexQT(j):indexQT(j)+interestLine-1);
-            eyeData(i).Kind(j).typeB(qt).trial = currentEye(indexQT(j)-baseLine:indexQT(j)-1);
+            eyeData(i).Kind(j).typeT(qt).trial = currentEye(indexQT(j):indexQT(j)+interestLine(2)-1);
+            eyeData(i).Kind(j).typeB(qt).trial = currentEye(indexQT(j)+interestLine(1):indexQT(j)-1);
             eyeData(i).Kind(j).trialName(qt).type = currentStimKind;
-            StimulationsAll(i,:,outerTestLoop) = [currentEye(indexQT(j)-baseLine:indexQT(j)-1) currentEye(indexQT(j):indexQT(j)+interestLine-1)];
+            StimulationsAll(i,:,outerTestLoop) = [currentEye(indexQT(j)+interestLine(1):indexQT(j)-1) currentEye(indexQT(j):indexQT(j)+interestLine(2)-1)];
             
             outerTestLoop = outerTestLoop + 1;
         end

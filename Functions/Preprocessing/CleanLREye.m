@@ -48,7 +48,7 @@ for i=1:nSubject
         
         
         % Below this comment is new code for lowpass filter
-        [EYEL, ~, ~] = eyefiltnew(EYEL,[],4,[],0,[],0);
+        [EYEL, ~, ~] = eyefiltnew(EYEL,[],filter,[],0,[],0);
         curveL = EYEL.data;
         
         for j=1:nLength
@@ -62,7 +62,7 @@ for i=1:nSubject
         
         
         % Below this comment is new code for lowpass filter
-        [EYER, ~, ~] = eyefiltnew(EYER,[],4,[],0,[],0);
+        [EYER, ~, ~] = eyefiltnew(EYER,[],filter,[],0,[],0);
         curveR = EYER.data;
         
         for j=1:nLength
@@ -122,8 +122,8 @@ for i=1:nSubject
     
    
     
-    [EYEL, ~, ~] = eyefiltnew(EYEL,[],4,[],0,[],0);
-    [EYER, ~, ~] = eyefiltnew(EYER,[],4,[],0,[],0);
+    [EYEL, ~, ~] = eyefiltnew(EYEL,[],filter,[],0,[],0);
+    [EYER, ~, ~] = eyefiltnew(EYER,[],filter,[],0,[],0);
     
     L_Data(i,:) = EYEL.data;
     R_Data(i,:) = EYER.data;
@@ -157,7 +157,7 @@ for i=1:nSubject
             EYE.trials = 1;
             EYE.pnts = nLength;
 
-            [EYE, ~, ~] = eyefiltnew(EYE,[],4,[],0,[],0);
+            [EYE, ~, ~] = eyefiltnew(EYE,[],filter,[],0,[],0);
             curve =  EYE.data;
             % curve=lowPass(nLength, curve, filter); %%%
             

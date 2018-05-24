@@ -47,17 +47,25 @@ num_participants = length(samplesEye);
 %% Remove Baseline
 disp('Removing Baseline...');
 
-
+baseLineSamples = numel(baseLine(1):baseLine(2))-1;
+interestLineSamples = numel(interestLine(1):interestLine(2))-1;
 % predefine
-stimulationsReferenceMat = zeros(num_participants,baseLine,num_stimulations);
+stimulationsReferenceMat = zeros(num_participants,baseLineSamples,num_stimulations);
 stimulationsReferenceMatMean = zeros(num_participants,num_stimulations);
-stimulationsCorrectedMM = zeros(num_participants,interestLine,num_stimulations);
-stimulationsUncorrectedMM = zeros(num_participants,interestLine,num_stimulations);
-stimulationsCorrectedPerc = zeros(num_participants,interestLine,num_stimulations);
+stimulationsCorrectedMM = zeros(num_participants,interestLineSamples,num_stimulations);
+stimulationsUncorrectedMM = zeros(num_participants,interestLineSamples,num_stimulations);
+stimulationsCorrectedPerc = zeros(num_participants,interestLineSamples,num_stimulations);
+
+
+if isequal(baseLine(1),interestLine(1))
+    bStart = 1;
+else
+    bStart = (baseLine(1)-interestLine(1))+1;
+end
 
 % Baseline correction
 for participant = 1:num_participants % Calculating reference value from baselineSEC-baseLineMS
-    for i = 1:baseLine
+    for i = bStart:baseLineSamples
         for stimulus = 1 : num_stimulations
             stimulationsReferenceMat(participant, i, stimulus) = Stimulations_All(participant,i,stimulus);
         end
@@ -72,7 +80,7 @@ end
 
 for participant = 1:num_participants % remove the baseline for data(mm) and data(%)
     for stimulus = 1 : num_stimulations
-        for i = 1:interestLine
+        for i = 1:interestLineSamples
             stimulationsCorrectedMM(participant,i,stimulus) = Stimulations_All(participant,i,stimulus) - stimulationsReferenceMatMean(participant ,stimulus);
             stimulationsUncorrectedMM(participant,i,stimulus) = Stimulations_All(participant,i,stimulus);
             stimulationsCorrectedPerc(participant,i,stimulus) =(Stimulations_All(participant,i,stimulus)-stimulationsReferenceMatMean(participant ,stimulus)) ./ stimulationsReferenceMatMean(participant ,stimulus) * 100;
@@ -116,9 +124,9 @@ end
 
 
 % predefine
-stimulationsCorrectedPercMean = zeros(num_participants,interestLine,num_stimulations);
-stimuliCorrectedMean = zeros(num_participants, interestLine, num_stimuli);
-stimulationsUncorrectedMean = zeros(num_participants, interestLine, num_stimuli);
+stimulationsCorrectedPercMean = zeros(num_participants,interestLineSamples,num_stimulations);
+stimuliCorrectedMean = zeros(num_participants, interestLineSamples, num_stimuli);
+stimulationsUncorrectedMean = zeros(num_participants, interestLineSamples, num_stimuli);
 
 if TF_REP
     disp('Averaging repeated Conditions...')
@@ -134,7 +142,7 @@ if TF_REP
     rep=zeros(num_participants,num_stimuli);
     
     
-    %Sum of the repetitions(only good quality recordings)
+    %Sum of the repetitions
     for stimulus = 1:num_stimuli
         for participant = 1:num_participants
             for Stimulation = First_Stimulation:First_Stimulation+Stimuli_presentations(stimulus)-1
@@ -167,11 +175,11 @@ if TF_REP
     % ------- Percentages of change of pupil diameter
     First_Stimulation = 1;
     rep=zeros(num_participants,num_stimuli);
-    stimuliPercSum = zeros(num_participants, interestLine, num_stimuli);
+    stimuliPercSum = zeros(num_participants, interestLineSamples, num_stimuli);
     
     for participant = 1:num_participants
         for stimulus = 1 : num_stimulations
-            for i = 1:interestLine
+            for i = 1:interestLineSamples
                 if isnan(stimulationsCorrectedPerc(participant,i,stimulus))
                     stimulationsCorrectedPerc(participant,i,stimulus)= 0;
                 end
@@ -195,7 +203,7 @@ if TF_REP
     % Mean of the repetitions
     for participant = 1:num_participants
         for stimulus = 1 : num_stimuli
-            for i = 1 : interestLine
+            for i = 1 : interestLineSamples
                 if rep(participant,stimulus) > 0
                     stimulationsCorrectedPercMean(participant,i,stimulus) = stimuliPercSum(participant,i,stimulus)./rep(participant,stimulus);
                 end

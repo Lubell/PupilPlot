@@ -16,26 +16,19 @@ save([workingD filesep 'preprocSettings.mat'] ,'optVar','genData')
 sampleRate = genData.fs;
 
 trialOpts = optVar{4,2};
-beforeT = strfind(trialOpts,'BT:');
-blineT =  strfind(trialOpts,',BL:');
-trialTime = strfind(trialOpts,',T:');
+baseLineOpts = optVar{4,3};
 
-trigOffSet = str2double(trialOpts(beforeT+3:blineT-1));
-trialLine = str2double(trialOpts(trialTime+3:end));
-baseLine = str2double(trialOpts(blineT+4:trialTime-1))/1000;
-
-trigOff = trigOffSet.*sampleRate;
-interestLine = trialLine.*sampleRate;
-baseLine = baseLine.*sampleRate;
+interestLine = trialOpts.*sampleRate;
+baseLine = baseLineOpts.*sampleRate;
 
 % move into new epoched_preproc file
-save([workingD filesep 'epoched_preproc.mat'] ,'optVar','genData','trigOff','interestLine','baseLine')
+save([workingD filesep 'epoched_preproc.mat'] ,'optVar','genData','interestLine','baseLine')
 
 %% Clean the pupils
 cleanWrapper(optVar,genData)
 
 %% segment into trials
-segSucess = preProcessPupilSegment(optVar,genData,trigOff,interestLine,baseLine);
+segSucess = preProcessPupilSegment(optVar,genData,interestLine);
 Stimulations_All = segSucess.StimAll;
 L_stim = segSucess.L_Eye;
 %% Finsih with baseline removal

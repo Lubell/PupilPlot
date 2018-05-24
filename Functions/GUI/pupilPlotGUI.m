@@ -324,10 +324,33 @@ function setPreProcOptMenu_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-logMan = preprocGUI(handles.log);
+[logMan,saveType] = preprocGUI(handles.log);
 
-handles.GeneralData.fs = logMan{2,3};
-handles.log = logMan;
+
+
+if isequal(saveType,1)
+    
+   
+        handles.GeneralData.fs = logMan{2,3};
+        handles.log = logMan;
+        
+        procFiles = [logMan{1,2} filesep 'preprocSettings.mat'];
+        
+        if exist(procFiles,'file')
+            load(procFiles)
+            optVar = logMan;
+            save([logMan{1,2} filesep 'preprocSettings.mat'],'optVar','genData')
+        else
+            optVar = logMan;
+            handles.GeneralData.fs = optVar{2,3};
+            genData = handles.GeneralData;
+            save([logMan{1,2} filesep 'preprocSettings.mat'],'optVar','genData')
+            
+        end
+        
+end
+
+
 guidata(hObject,handles)
 
 
@@ -383,9 +406,12 @@ if isequal(checkOutTable{1,1},1)
     if alreadyNamed>=2
         selection = questdlg('Use already saved trigger definitions?','Load?', ...
             'Use trigger definitions as is','Use trigger definitions and edit','No','Use trigger definitions as is');
+        
     else
         selection = 'No';
     end
+    
+    
     TriggerImporter(checkOutTableTI,selection);
     
     handles.log = checkOutTable;
@@ -944,20 +970,27 @@ analysisVariables = load([saveDir filesep 'Analysis_StageOne_' handles.GeneralDa
 num_stimuli = size(handles.GeneralData.triggerNames,1);
 Colors = handles.graphingStuff.Colors(1:num_stimuli,:);
 sampleRate = handles.GeneralData.fs;
+
+
 trialOpts = optVar{4,2};
 
-
-trialTime = strfind(trialOpts,',T:');
-trialLine = str2double(trialOpts(trialTime+3:end));
-%interestLineMS = trialLine*1000;
-interestLineSamples = trialLine*sampleRate;
-
-
-set(handles.mainAxe,'XTickLabelRotation',0);
-
+interestLine = trialOpts.*sampleRate;
+interestLineSamples = numel(interestLine(1):interestLine(2));
 % show means by problem type
-xtickle = 0:(interestLineSamples/6):interestLineSamples;
+xtack = interestLine(1):(interestLineSamples/6):interestLine(2);
+posVals = find(xtack>0);
+negVals = find(xtack<0);
+
+xtickle = zeros(length(xtack)+1,1);
+xtickle(posVals+1) = xtack(posVals);
+xtickle(negVals) = xtack(negVals);
+
+x = interestLine(1)+1:interestLine(2);
 xtickMSLabel = (xtickle/sampleRate)*1000;
+xlim(handles.mainAxe,[xtickle(1) xtickle(end)])
+
+% set(handles.mainAxe,'XTickLabelRotation',0);
+
 if ~isequal(handles.GeneralData.selectMe,1:num_stimuli)
     
     num_stimuli = handles.GeneralData.selectMe;
@@ -969,7 +1002,7 @@ hold on;
 set(handles.mainAxe,'ColorOrder',Colors(num_stimuli,:));
 outCount = 1;
 for i = num_stimuli %(2:end)
-    plot(handles.mainAxe,1:interestLineSamples,analysisVariables.X_Uncorr_DataSelected_Means(i,:),'buttonDownFcn',@mainAxe_ButtonDownFcn);
+    plot(handles.mainAxe,x,analysisVariables.X_Uncorr_DataSelected_Means(i,:),'buttonDownFcn',@mainAxe_ButtonDownFcn);
     %squeeze(Stimuli_Data_Corr_Mean(:,:,i))));%,'Color',Colors(i,:));
     namesOFcondi{outCount} = analysisVariables.Stimulations_names{i};
     outCount = outCount + 1;
@@ -988,7 +1021,7 @@ AnswerDel = questdlg('Do you want to add confidence intervals ?','CI','Yes - Bet
 handles.GeneralData.AnswerDel = AnswerDel;
 if strcmpi(AnswerDel,'Yes - Between Subject')
     set (handles.mainAxe,'ColorOrder',Colors(num_stimuli,:));
-    X=[1:interestLineSamples,fliplr(1:interestLineSamples)];
+    X=[x,fliplr(x)];
     colorCounter = 1;
     for stimulus = num_stimuli
         fillUP = analysisVariables.X_Uncorr_DataSelected_CI_Above(stimulus,:);
@@ -999,13 +1032,13 @@ if strcmpi(AnswerDel,'Yes - Between Subject')
     end
     
     f = findobj(handles.mainAxe,'Type','patch');
-    alpha(f,0.1)
+    alpha(f,0.05)
 elseif strcmpi(AnswerDel,'Yes - Within Subject')
     % Add
     [ciAbove,ciBelow]=CI_loftus_wthnPT(num_stimuli,analysisVariables.X_Uncorr_DataSelected,...
         analysisVariables.num_participants_F,analysisVariables.X_Uncorr_DataSelected_Means,analysisVariables.zScore);
     set (handles.mainAxe,'ColorOrder',Colors(num_stimuli,:));
-    X=[1:interestLineSamples,fliplr(1:interestLineSamples)];
+    X=[x,fliplr(x)];
     for stimulus = num_stimuli
         fillUP = ciAbove(stimulus,:);
         fillDown = ciBelow(stimulus,:);
@@ -1014,13 +1047,19 @@ elseif strcmpi(AnswerDel,'Yes - Within Subject')
     end
     
     f = findobj(handles.mainAxe,'Type','patch');
-    alpha(f,0.1)
+    alpha(f,0.05)
     
     
 end
 
 legend(handles.mainAxe,namesOFcondi);
 handles.GraphingStuff.hLeg = namesOFcondi;
+y1 = ylim;
+y1(2) = max(Y);
+line([0 0],y1,'LineWidth',1,...
+   'Color',[.8 .8 .8],...
+   'LineStyle','--',...
+   'Parent',handles.mainAxe);
 hold off
 [hObject,handles] = plotMenuCheck(hObject,handles);
 guidata(hObject,handles)
@@ -1044,17 +1083,28 @@ analysisVariables = load([saveDir filesep 'Analysis_StageOne_' handles.GeneralDa
 num_stimuli = size(handles.GeneralData.triggerNames,1);
 Colors = handles.graphingStuff.Colors(1:num_stimuli,:);
 sampleRate = handles.GeneralData.fs;
+
 trialOpts = optVar{4,2};
 
-trialTime = strfind(trialOpts,',T:');
-trialLine = str2double(trialOpts(trialTime+3:end));
-interestLineSamples = trialLine*sampleRate;
+interestLine = trialOpts.*sampleRate;
+interestLineSamples = numel(interestLine(1):interestLine(2));
+% show means by problem type
+xtack = interestLine(1):(interestLineSamples/6):interestLine(2);
+posVals = find(xtack>0);
+negVals = find(xtack<0);
+
+xtickle = zeros(length(xtack)+1,1);
+xtickle(posVals+1) = xtack(posVals);
+xtickle(negVals) = xtack(negVals);
+
+x = interestLine(1)+1:interestLine(2);
+xtickMSLabel = ceil((xtickle/sampleRate)*1000);
+xlim(handles.mainAxe,[xtickle(1) xtickle(end)])
 
 set(handles.mainAxe,'XTickLabelRotation',0);
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Percentage of change of pupil diameter
-xtickle = 0:(interestLineSamples/6):interestLineSamples;
-xtickMSLabel = (xtickle/sampleRate)*1000;
+
 % Plot of percentage of change of pupil diameter over time for each stimulus
 if ~isequal(handles.GeneralData.selectMe,1:num_stimuli)
     num_stimuli = handles.GeneralData.selectMe;
@@ -1100,7 +1150,7 @@ if strcmpi(AnswerDel,'Yes - Between Subject');
     %set (handles.mainAxe,'ColorOrder',Colors(num_stimuli,:));
     %plot(handles.mainAxe,X_Perc_DataSelected_CI_Above(num_stimuli,:));
     %plot(handles.mainAxe,X_Perc_DataSelected_CI_Below(num_stimuli,:));
-    X=[1:interestLineSamples,fliplr(1:interestLineSamples)];
+    X=[x,fliplr(x)];
     colorCounter = 1;
     for stimulus = num_stimuli
         fillUP = analysisVariables.X_Perc_DataSelected_CI_Above(stimulus,:);
@@ -1120,7 +1170,7 @@ elseif strcmpi(AnswerDel,'Yes - Within Subject')
     [ciAbove,ciBelow]=CI_loftus_wthnPT(num_stimuli,analysisVariables.X_Perc_DataSelected,...
         analysisVariables.num_participants_F,analysisVariables.X_Perc_DataSelected_Means,analysisVariables.zScore);
     set (handles.mainAxe,'ColorOrder',Colors(num_stimuli,:));
-    X=[1:interestLineSamples,fliplr(1:interestLineSamples)];
+    X=[x,fliplr(x)];
     for stimulus = num_stimuli
         fillUP = ciAbove(stimulus,:);
         fillDown = ciBelow(stimulus,:);
@@ -1134,6 +1184,12 @@ end
 
 legend(handles.mainAxe,Stimuli_selected_names);%,'FontSize',8, 'Location','NorthWestOutside');
 handles.GraphingStuff.hLeg = Stimuli_selected_names;
+y1 = ylim;
+y1(2) = max(Y);
+line([0 0],y1,'LineWidth',1,...
+   'Color',[.8 .8 .8],...
+   'LineStyle','--',...
+   'Parent',handles.mainAxe);
 hold off
 [hObject,handles] = plotMenuCheck(hObject,handles);
 guidata(hObject,handles)
@@ -1157,17 +1213,30 @@ Colors = handles.graphingStuff.Colors(1:num_stimuli,:);
 sampleRate = handles.GeneralData.fs;
 trialOpts = optVar{4,2};
 
-trialTime = strfind(trialOpts,',T:');
-trialLine = str2double(trialOpts(trialTime+3:end));
-interestLineSamples = trialLine*sampleRate;
+interestLine = trialOpts.*sampleRate;
+interestLineSamples = numel(interestLine(1):interestLine(2));
+% show means by problem type
+x = interestLine(1)+1:interestLine(2);
 
-set(handles.mainAxe,'XTickLabelRotation',0);
+xtack = interestLine(1):(interestLineSamples/6):interestLine(2);
+posVals = find(xtack>0);
+negVals = find(xtack<0);
+
+xtickle = zeros(length(xtack)+1,1);
+xtickle(posVals+1) = xtack(posVals);
+xtickle(negVals) = xtack(negVals);
+
+xtickMSLabel = ceil((xtickle/sampleRate)*1000);
+
+xlim(handles.mainAxe,interestLine)
+
+
+% set(handles.mainAxe,'XTickLabelRotation',0);
 
 % Baseline-corrected data
 % Plot of baseline-corrected pupil diameter over time for each stimulus
 % show means by problem type
-xtickle = 0:(interestLineSamples/6):interestLineSamples;
-xtickMSLabel = (xtickle/sampleRate)*1000;
+
 if ~isequal(handles.GeneralData.selectMe,1:num_stimuli)
     num_stimuli = handles.GeneralData.selectMe;
 else
@@ -1178,7 +1247,7 @@ hold on;
 set(handles.mainAxe,'ColorOrder',Colors(num_stimuli,:));
 outCount = 1;
 for i = num_stimuli %(2:end)
-    plot(handles.mainAxe,1:interestLineSamples,analysisVariables.X_Corr_DataSelected_Means(i,:));
+    plot(handles.mainAxe,x,analysisVariables.X_Corr_DataSelected_Means(i,:));
     namesOFcondi{outCount} = analysisVariables.Stimulations_names{i};
     outCount = outCount + 1;
 end
@@ -1195,7 +1264,7 @@ AnswerDel = questdlg('Do you want to add confidence intervals ?','CI','Yes - Bet
 handles.GeneralData.AnswerDel = AnswerDel;
 if strcmpi(AnswerDel,'Yes - Between Subject');
     set (handles.mainAxe,'ColorOrder',Colors(num_stimuli,:));
-    X=[1:interestLineSamples,fliplr(1:interestLineSamples)];
+    X=[x,fliplr(x)];
     
     for stimulus = num_stimuli
         fillUP = analysisVariables.X_Corr_DataSelected_CI_Above(stimulus,:);
@@ -1211,7 +1280,7 @@ elseif strcmpi(AnswerDel,'Yes - Within Subject')
     [ciAbove,ciBelow]=CI_loftus_wthnPT(num_stimuli,analysisVariables.X_Corr_DataSelected,...
         analysisVariables.num_participants_F,analysisVariables.X_Corr_DataSelected_Means,analysisVariables.zScore);
     set (handles.mainAxe,'ColorOrder',Colors(num_stimuli,:));
-    X=[1:interestLineSamples,fliplr(1:interestLineSamples)];
+    X=[x,fliplr(x)];
     for stimulus = num_stimuli
         fillUP = ciAbove(stimulus,:);
         fillDown = ciBelow(stimulus,:);
@@ -1225,6 +1294,12 @@ elseif strcmpi(AnswerDel,'Yes - Within Subject')
 end
 legend(handles.mainAxe,namesOFcondi);
 handles.GraphingStuff.hLeg = namesOFcondi;
+y1 = ylim;
+%y1(2) = max(Y);
+line([0 0],y1,'LineWidth',1,...
+   'Color',[.8 .8 .8],...
+   'LineStyle','--',...
+   'Parent',handles.mainAxe);
 hold off
 [hObject,handles] = plotMenuCheck(hObject,handles);
 guidata(hObject,handles)
@@ -1245,11 +1320,22 @@ analysisVariables = load([saveDir filesep 'Analysis_StageOne_' handles.GeneralDa
 sampleRate = handles.GeneralData.fs;
 trialOpts = optVar{4,2};
 
-trialTime = strfind(trialOpts,',T:');
-trialLine = str2double(trialOpts(trialTime+3:end));
-interestLineMS = trialLine*1000;
-interestLineSamples = trialLine*sampleRate;
+interestLine = trialOpts.*sampleRate;
+interestLineSamples = numel(interestLine(1):interestLine(2));
+% show means by problem type
+x = interestLine(1)+1:interestLine(2);
 
+xtack = interestLine(1):(interestLineSamples/6):interestLine(2);
+posVals = find(xtack>0);
+negVals = find(xtack<0);
+
+xtickle = zeros(length(xtack)+1,1);
+xtickle(posVals+1) = xtack(posVals);
+xtickle(negVals) = xtack(negVals);
+
+xtickMSLabel = ceil((xtickle/sampleRate)*1000);
+
+xlim(handles.mainAxe,[interestLine(1) xtickle(end)])
 set(handles.mainAxe,'XTickLabelRotation',0);
 % Plot mean functional pupil diameter by condition
 
@@ -1260,15 +1346,15 @@ else
     handles.GeneralData.lastCompIndex = compareIndexes;
     hold on
     %get comparision
-    [fdaComplete,~,~,~] = performFDAfunc(analysisVariables.Stimuli_Data_Corr_Mean,compareIndexes,interestLineSamples,analysisVariables.alphaSelect,0);
-    data_mat = eval_fd(1:interestLineSamples,fdaComplete);
+    [fdaComplete,~,~,~] = performFDAfunc(analysisVariables.Stimuli_Data_Corr_Mean,compareIndexes,interestLineSamples-1,analysisVariables.alphaSelect,0);
+    data_mat = eval_fd(1:interestLineSamples-1,fdaComplete);
     plot(handles.mainAxe,data_mat);
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % add zero line
-    lineOne = line([1 interestLineSamples],[0,0],'Color', 'r');
+    line([x(1) x(end)],[0,0],'Color', 'r');
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    set(handles.mainAxe,'XTick',0:60:interestLineSamples);
-    set(handles.mainAxe,'XTickLabel',0:1000:interestLineMS);
+    set(handles.mainAxe,'XTick',xtickle);
+    set(handles.mainAxe,'XTickLabel',xtickMSLabel);
     handles.mainAxe.XLabel.String = 'Time (ms)';
     handles.mainAxe.YLabel.String = 'Mean pupil diameter difference (mm)';
     condiNames = handles.GeneralData.triggerNames(compareIndexes,1);
@@ -1298,10 +1384,28 @@ analysisVariables = load([saveDir filesep 'Analysis_StageOne_' handles.GeneralDa
 sampleRate = handles.GeneralData.fs;
 trialOpts = optVar{4,2};
 
-trialTime = strfind(trialOpts,',T:');
-trialLine = str2double(trialOpts(trialTime+3:end));
-interestLineMS = trialLine*1000;
-interestLineSamples = trialLine*sampleRate;
+interestLine = trialOpts.*sampleRate;
+interestLineMSWhole = trialOpts.*1000;
+
+interestLineSamples = numel(interestLine(1):interestLine(2));
+% show means by problem type
+x = interestLine(1)+1:interestLine(2);
+
+xtack = interestLine(1):(interestLineSamples/6):interestLine(2);
+posVals = find(xtack>0);
+negVals = find(xtack<0);
+
+xtickle = zeros(length(xtack)+1,1);
+xtickle(posVals+1) = xtack(posVals);
+xtickle(negVals) = xtack(negVals);
+
+xtickMSLabel = ceil((xtickle/sampleRate)*1000);
+% xlim(handles.mainAxe,[interestLine(1) xtickle(end)])
+
+% trialTime = strfind(trialOpts,',T:');
+% trialLine = str2double(trialOpts(trialTime+3:end));
+interestLineMS = numel(interestLineMSWhole(1)+1:interestLineMSWhole(2));
+% interestLineSamples = interestLineSamples*sampleRate;
 
 set(handles.mainAxe,'XTickLabelRotation',0);
 
@@ -1312,9 +1416,11 @@ else
     num_stimuli = 1:num_stimuli;
 end
 
-[ANOVA_data,binNumber] = anova_Plot(interestLineSamples,interestLineMS,...
+anovaPlotData = analysisVariables.Stimuli_Data_Corr_Mean;
+
+[ANOVA_data,binNumber] = anova_Plot(interestLineSamples-1,interestLineMS,...
     analysisVariables.num_participants_F(1),num_stimuli,...
-    analysisVariables.Stimuli_Data_Corr_Mean,sampleRate);
+    anovaPlotData,sampleRate);
 
 handles.GeneralData.binned = binNumber;
 if isequal(binNumber,1)
@@ -1327,13 +1433,14 @@ if isequal(binNumber,1)
     handles.graphName.String = 'Average change in pupil diameter per Condition';
 else
     slots = 1:interestLineSamples/binNumber:interestLineSamples;
+    
     bar_data = reshape(mean(ANOVA_data),numel(num_stimuli),binNumber)';
     slots = ((slots-1)/sampleRate)*1000;
 
     bar(handles.mainAxe,slots,bar_data);
     set(handles.mainAxe,'Box','off');
     set(handles.mainAxe,'XTick',slots);
-    set(handles.mainAxe,'XTickLabel',0:interestLineMS/binNumber:interestLineMS);
+    set(handles.mainAxe,'XTickLabel',xtickMSLabel);
     
     handles.mainAxe.XLabel.String = 'Time from stimulus onset (ms)';
     handles.mainAxe.YLabel.String = 'Average pupil diameter change from baseline';
@@ -1367,9 +1474,22 @@ analysisVariables = load([saveDir filesep 'Analysis_StageOne_' handles.GeneralDa
 sampleRate = handles.GeneralData.fs;
 trialOpts = optVar{4,2};
 
-trialTime = strfind(trialOpts,',T:');
-trialLine = str2double(trialOpts(trialTime+3:end));
-interestLineSamples = trialLine*sampleRate;
+interestLine = trialOpts.*sampleRate;
+interestLineSamples = numel(interestLine(1):interestLine(2));
+% show means by problem type
+x = interestLine(1)+1:interestLine(2);
+
+xtack = interestLine(1):(interestLineSamples/5):interestLine(2);
+posVals = find(xtack>0);
+negVals = find(xtack<0);
+
+xtickle = zeros(length(xtack)+1,1);
+xtickle(posVals+1) = xtack(posVals);
+xtickle(negVals) = xtack(negVals);
+
+xtickMSLabel = ceil((xtickle/sampleRate)*1000);
+
+
 
 set(handles.mainAxe,'XTickLabelRotation',0);
 % stimuli factor p-value over time
@@ -1389,13 +1509,14 @@ end
 
 p_time = P_stim.ptime;
 p_sign = P_stim.psign;
-xtickle = 0:(interestLineSamples/6):interestLineSamples;
-xtickMSLabel = (xtickle/sampleRate)*1000;
+
+
 
 plot(handles.mainAxe,p_time(1,:));
 h = findobj(handles.mainAxe,'Type','line');
 set(h(1),'Color','k','LineWidth',2);
 hold on;
+
 plot(handles.mainAxe,p_sign(1,:));
 h = findobj(handles.mainAxe,'Type','line');
 set(h(1),'Color','r','LineWidth',2);
@@ -1437,9 +1558,20 @@ analysisVariables = load([saveDir filesep 'Analysis_StageOne_' handles.GeneralDa
 sampleRate = handles.GeneralData.fs;
 trialOpts = optVar{4,2};
 
-trialTime = strfind(trialOpts,',T:');
-trialLine = str2double(trialOpts(trialTime+3:end));
-interestLineSamples = trialLine*sampleRate;
+interestLine = trialOpts.*sampleRate;
+interestLineSamples = numel(interestLine(1):interestLine(2));
+% show means by problem type
+x = interestLine(1)+1:interestLine(2);
+
+xtack = interestLine(1):(interestLineSamples/6):interestLine(2);
+posVals = find(xtack>0);
+negVals = find(xtack<0);
+
+xtickle = zeros(length(xtack)+1,1);
+xtickle(posVals+1) = xtack(posVals);
+xtickle(negVals) = xtack(negVals);
+
+xtickMSLabel = ceil((xtickle/sampleRate)*1000);
 
 set(handles.mainAxe,'XTickLabelRotation',0);
 % Functional t-test of difference (corrected)
@@ -1465,8 +1597,7 @@ end
 
 F_time = F_stim.ftime;
 F_Sign = F_stim.fsign;
-xtickle = 0:(interestLineSamples/6):interestLineSamples;
-xtickMSLabel = (xtickle/sampleRate)*1000;
+
 
 plot(handles.mainAxe,F_time(1,:));
 h = findobj(handles.mainAxe,'Type','line');
@@ -1526,12 +1657,20 @@ analysisVariables = load([saveDir filesep 'Analysis_StageOne_' handles.GeneralDa
 sampleRate = handles.GeneralData.fs;
 trialOpts = optVar{4,2};
 
-trialTime = strfind(trialOpts,',T:');
-trialLine = str2double(trialOpts(trialTime+3:end));
-interestLineMS = trialLine*1000;
-interestLineSamples = trialLine*sampleRate;
+interestLine = trialOpts.*sampleRate;
+interestLineSamples = numel(interestLine(1):interestLine(2));
+% show means by problem type
+x = interestLine(1)+1:interestLine(2);
 
+xtack = interestLine(1):(interestLineSamples/5):interestLine(2);
+posVals = find(xtack>0);
+negVals = find(xtack<0);
 
+xtickle = zeros(length(xtack)+1,1);
+xtickle(posVals+1) = xtack(posVals);
+xtickle(negVals) = xtack(negVals);
+
+xtickMSLabel = ceil((xtickle/sampleRate)*1000);
 set(handles.mainAxe,'XTickLabelRotation',0);
 
 % Plot functional t-test pupil diameter by condition
@@ -1567,16 +1706,17 @@ compareIndexes = handles.GeneralData.selectMe;
 handles.GeneralData.lastCompIndex = compareIndexes;
 
 %get comparision
-[~,t_fd,crit_t_val,numTails] = performFDAfunc(analysisVariables.Stimuli_Data_Corr_Mean,compareIndexes,interestLineSamples,analysisVariables.alphaSelect,1);
+[~,t_fd,crit_t_val,numTails] = performFDAfunc(analysisVariables.Stimuli_Data_Corr_Mean,compareIndexes,interestLineSamples-1,analysisVariables.alphaSelect,1);
 handles.GeneralData.tailNumber = numTails;
 
-plot(handles.mainAxe,1:interestLineSamples,t_fd,'Color','k','LineWidth',4);
-lineOne = line([1 interestLineSamples],[crit_t_val,crit_t_val],'Color', 'r');
-lineTwo = line([1 interestLineSamples],[-crit_t_val,-crit_t_val],'Color', 'r');
+plot(handles.mainAxe,x,t_fd,'Color','k','LineWidth',4);
+lineOne = line([x(1) x(end)],[crit_t_val,crit_t_val],'Color', 'r');
+lineTwo = line([x(1) x(end)],[-crit_t_val,-crit_t_val],'Color', 'r');
 
 %set(handles.mainAxe,'Children',[lineOne lineTwo])
-set(handles.mainAxe,'XTick',0:60:interestLineSamples);
-set(handles.mainAxe,'XTickLabel',0:1000:interestLineMS);
+xlim(handles.mainAxe,[interestLine(1) xtickle(end)])
+set(handles.mainAxe,'XTick',xtickle);
+set(handles.mainAxe,'XTickLabel',xtickMSLabel);
 handles.mainAxe.XLabel.String = 'Time (ms)';
 handles.mainAxe.YLabel.String = 't-test value';
 condiNames = handles.GeneralData.triggerNames;
@@ -1636,11 +1776,11 @@ else
     for Component = 1 : nb_Components_Selected
         display(Component)
         if p_PCA(Component,1) <0.05
-            disp('discriminates conditions')
+            disp('DOES discriminate conditions')
             disp('p-value of condition effect')
             disp(p_PCA(Component,1))
         else
-            disp('NOT discriminates conditions')
+            disp('DOES NOT discriminate conditions')
             disp('p-value of condition effect')
             disp(p_PCA(Component,1))
         end
@@ -1676,7 +1816,8 @@ else
     xTickle = 1:SamplesSign/10:SamplesSign;
     begin_MS = (beg_signperiod_time/sampleRate)*1000;
     end_MS = (end_signperiod_time/sampleRate)*1000;
-    xlaborDor = begin_MS:round(end_MS/19):end_MS;
+    xlaborDor = ceil(begin_MS:round(end_MS/19):end_MS);
+    xlim(handles.mainAxe,[xTickle(1) xTickle(end)])
     set(handles.mainAxe,'XTick',xTickle);
     set(handles.mainAxe,'XTickLabel',xlaborDor);
     handles.mainAxe.XLabel.String = 'Time (ms)';
@@ -1788,12 +1929,12 @@ if ~isnumeric(handles.topDirPP)
 iconData = imread([handles.topDirPP filesep 'Functions' filesep 'GUI' filesep 'HelpGui' filesep 'eye.png']);
 
 
-Button=buttondlg('Created by Jamie Lubell 2017','About','Done','Github',struct('Default','Done','IconString','custom','IconData',iconData)); 
+Button=buttondlg('Created by Jamie Lubell 2017','About','Okay','Github',struct('Default','Okay','IconString','custom','IconData',iconData)); 
 
 switch Button      
         
     case 'Github'
-        url = 'https://github.uio.no/jameslu';
+        url = 'https://github.com/Lubell/PupilPlot';
         web(url,'-browser')
 end
 

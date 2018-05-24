@@ -56,6 +56,12 @@ function viewLog_OpeningFcn(hObject, eventdata, handles, varargin)
 handles.output = hObject;
 
 checkOutTable = varargin{1};
+trialLength = checkOutTable{4,2}*1000;
+baselineLength = checkOutTable{4,3}*1000;
+
+checkOutTable{4,2} = ['Trial Time: ' num2str(trialLength(1)) ':' num2str(trialLength(2)) ' ms'];
+checkOutTable{4,3} = ['Baseline Time: ' num2str(baselineLength(1)) ':' num2str(baselineLength(2)) ' ms'];
+
 handles.chkTable.Data = checkOutTable;
 
 % Update handles structure

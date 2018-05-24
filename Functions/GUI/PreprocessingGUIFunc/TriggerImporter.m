@@ -98,7 +98,7 @@ switch selection
     case 'Use trigger definitions as is'
         load([workingD filesep 'trigger_definitions.mat'])
         
-        save_ImportStats(optVar,ttStruct,dataFromTable,handles)
+        save_ImportStats(optVar,ttStruct,dataFromTable,handles,selection)
         warndlg('Already defined trigger definitions loaded')
         return
         
@@ -208,40 +208,43 @@ end
 
 
 
-function save_ImportStats(optVar,ttStruct,dataTable,handles)
+function save_ImportStats(optVar,ttStruct,dataTable,handles,selection)
 
 
 workingD = optVar{1,2};
 
 
-primD = dir([workingD filesep '*_IMP.mat']);
-f = waitbar(0,'Updating Triggers Definitions');
 
-for sub = 1:length(primD)
-    waitbar(sub/length(primD),f,['Updating Triggers: ' primD(sub).name]);
-    load([workingD filesep primD(sub).name])
-    for i = 1:length(ttStruct)
-        curCon = ttStruct(i).events;
-        for j = 1:length(curCon)
-            for k = 1:length(trig)
-                if ~isequal(trig{k},0) && strcmp(curCon{j},trig{k})
-                    trig{k} = ttStruct(i).name;
+if ~strcmp(selection,'Use trigger definitions as is')
+    
+    primD = dir([workingD filesep '*_IMP.mat']);
+    f = waitbar(0,'Updating Triggers Definitions');
+    
+    for sub = 1:length(primD)
+        waitbar(sub/length(primD),f,['Updating Triggers: ' primD(sub).name]);
+        load([workingD filesep primD(sub).name])
+        for i = 1:length(ttStruct)
+            curCon = ttStruct(i).events;
+            for j = 1:length(curCon)
+                for k = 1:length(trig)
+                    if ~isequal(trig{k},0) && strcmp(curCon{j},trig{k})
+                        trig{k} = ttStruct(i).name;
+                    end
                 end
             end
+            
+        end
+        
+        if exist('C_pupil','var')
+            save([workingD filesep primD(sub).name],'Lpupil','Rpupil','trig','C_pupil')
+        else
+            save([workingD filesep primD(sub).name],'Lpupil','Rpupil','trig')
         end
         
     end
     
-    if exist('C_pupil','var')
-        save([workingD filesep primD(sub).name],'Lpupil','Rpupil','trig','C_pupil')
-    else 
-        save([workingD filesep primD(sub).name],'Lpupil','Rpupil','trig')
-    end
-    
+    close(f)
 end
-
-
-
 
 occurrances=cell(length(ttStruct),2);
 
@@ -259,7 +262,7 @@ dataFromTable = dataTable;
 
 % cleanup data from table?
 save([workingD filesep 'trigger_definitions.mat'],'ttStruct','occurrances','dataFromTable')
-close(f)
+
 uiresume(handles.figure1)
 
 
