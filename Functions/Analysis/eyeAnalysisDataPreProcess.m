@@ -54,6 +54,7 @@ else
     line_start = 1;
     for stimulus = 1:num_stimuli
         X_Corr_DataSelected (line_start:num_participants*stimulus,:) = Data_Corr(:,:,Stimuli_ranks(stimulus,1));
+        X_Uncorr_DataSelected(line_start:num_participants*stimulus,:) = Stimulations_Data_UnCorr_Mean(:,:,Stimuli_ranks(stimulus,1));
         line_start = num_participants*stimulus + 1;
     end
 end
