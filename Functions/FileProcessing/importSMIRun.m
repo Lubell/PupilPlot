@@ -22,7 +22,7 @@ if isfield(importCheckStruct,'importFolder')
         % no new name and import required
         files2import= handles.GeneralData.importTxt;
         workingDirectory = uigetdir(importFolder,'Select Directory to Import into');
-        for i = 1:length(files2import)
+        for i = 1:size(files2import,2)
             disp(['Importing file: ' files2import{i}])
             [~,~,ext] = fileparts([importFolder filesep files2import{i}]);
             if strcmpi(ext,'.tsv')

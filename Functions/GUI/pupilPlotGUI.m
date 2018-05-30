@@ -27,11 +27,11 @@ function varargout = pupilPlotGUI(varargin)
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
 gui_State = struct('gui_Name',       mfilename, ...
-                   'gui_Singleton',  gui_Singleton, ...
-                   'gui_OpeningFcn', @pupilPlotGUI_OpeningFcn, ...
-                   'gui_OutputFcn',  @pupilPlotGUI_OutputFcn, ...
-                   'gui_LayoutFcn',  [] , ...
-                   'gui_Callback',   []);
+    'gui_Singleton',  gui_Singleton, ...
+    'gui_OpeningFcn', @pupilPlotGUI_OpeningFcn, ...
+    'gui_OutputFcn',  @pupilPlotGUI_OutputFcn, ...
+    'gui_LayoutFcn',  [] , ...
+    'gui_Callback',   []);
 if nargin && ischar(varargin{1})
     gui_State.gui_Callback = str2func(varargin{1});
 end
@@ -299,8 +299,8 @@ function quitMenu_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 selection = questdlg(['Close ' get(handles.figure1,'Name') '?'],...
-                     ['Close ' get(handles.figure1,'Name') '...'],...
-                     'Yes','No','Yes');
+    ['Close ' get(handles.figure1,'Name') '...'],...
+    'Yes','No','Yes');
 if strcmp(selection,'No')
     return;
 end
@@ -330,24 +330,24 @@ function setPreProcOptMenu_Callback(hObject, eventdata, handles)
 
 if isequal(saveType,1)
     
-   
-        handles.GeneralData.fs = logMan{2,3};
-        handles.log = logMan;
+    
+    handles.GeneralData.fs = logMan{2,3};
+    handles.log = logMan;
+    
+    procFiles = [logMan{1,2} filesep 'preprocSettings.mat'];
+    
+    if exist(procFiles,'file')
+        load(procFiles)
+        optVar = logMan;
+        save([logMan{1,2} filesep 'preprocSettings.mat'],'optVar','genData')
+    else
+        optVar = logMan;
+        handles.GeneralData.fs = optVar{2,3};
+        genData = handles.GeneralData;
+        save([logMan{1,2} filesep 'preprocSettings.mat'],'optVar','genData')
         
-        procFiles = [logMan{1,2} filesep 'preprocSettings.mat'];
-        
-        if exist(procFiles,'file')
-            load(procFiles)
-            optVar = logMan;
-            save([logMan{1,2} filesep 'preprocSettings.mat'],'optVar','genData')
-        else
-            optVar = logMan;
-            handles.GeneralData.fs = optVar{2,3};
-            genData = handles.GeneralData;
-            save([logMan{1,2} filesep 'preprocSettings.mat'],'optVar','genData')
-            
-        end
-        
+    end
+    
 end
 
 
@@ -879,7 +879,7 @@ num_parts = analysisVariables.num_participants_F(1);
 maxSamp = max(size(analysisVariables.Stimulations_All));
 
 scatter(handles.mainAxe,1:maxSamp,...
-    analysisVariables.L_stim(1,maxSamp-(maxSamp-1):maxSamp),4,'k','filled') % 
+    analysisVariables.L_stim(1,maxSamp-(maxSamp-1):maxSamp),4,'k','filled') %
 % tester = analysisVariables.L_stim(1,foo-(foo-1):foo);
 xtickMSLabel = (0:round((maxSamp*sampleRate)/11):maxSamp*sampleRate);
 
@@ -981,12 +981,19 @@ xtack = interestLine(1):(interestLineSamples/6):interestLine(2);
 posVals = find(xtack>0);
 negVals = find(xtack<0);
 
+if ~isequal(numel(negVals),1)
+    baseVals = xtack(negVals(1)):(xtack(negVals(1))/numel(negVals))*-1:0;
+else
+    baseVals = xtack;
+end
+
 xtickle = zeros(length(xtack)+1,1);
 xtickle(posVals+1) = xtack(posVals);
-xtickle(negVals) = xtack(negVals);
+xtickle(negVals) = baseVals(negVals);
 
 x = interestLine(1)+1:interestLine(2);
-xtickMSLabel = (xtickle/sampleRate)*1000;
+xtickMSLabel = ceil((xtickle/sampleRate)*1000);
+
 xlim(handles.mainAxe,[xtickle(1) xtickle(end)])
 
 % set(handles.mainAxe,'XTickLabelRotation',0);
@@ -1052,15 +1059,16 @@ elseif strcmpi(AnswerDel,'Yes - Within Subject')
     
 end
 
-legend(handles.mainAxe,namesOFcondi);
+
 handles.GraphingStuff.hLeg = namesOFcondi;
 y1 = ylim;
-y1(2) = max(Y);
+% y1(2) = max(Y);
 line([0 0],y1,'LineWidth',1,...
-   'Color',[.8 .8 .8],...
-   'LineStyle','--',...
-   'Parent',handles.mainAxe);
+    'Color',[0 0 0],...
+    'LineStyle','--');%,...
+%'Parent',handles.mainAxe);
 hold off
+legend(handles.mainAxe,namesOFcondi);
 [hObject,handles] = plotMenuCheck(hObject,handles);
 guidata(hObject,handles)
 
@@ -1093,9 +1101,17 @@ xtack = interestLine(1):(interestLineSamples/6):interestLine(2);
 posVals = find(xtack>0);
 negVals = find(xtack<0);
 
+
+if ~isequal(numel(negVals),1)
+    baseVals = xtack(negVals(1)):(xtack(negVals(1))/numel(negVals))*-1:0;
+else
+    baseVals = xtack;
+end
+
+
 xtickle = zeros(length(xtack)+1,1);
 xtickle(posVals+1) = xtack(posVals);
-xtickle(negVals) = xtack(negVals);
+xtickle(negVals) = baseVals(negVals);
 
 x = interestLine(1)+1:interestLine(2);
 xtickMSLabel = ceil((xtickle/sampleRate)*1000);
@@ -1115,7 +1131,7 @@ end
 hold on
 set(handles.mainAxe,'ColorOrder',Colors(num_stimuli,:));
 for stimulus = num_stimuli
-    plot(handles.mainAxe,analysisVariables.X_Perc_DataSelected_Means(stimulus,:));
+    plot(handles.mainAxe,x,analysisVariables.X_Perc_DataSelected_Means(stimulus,:));
 end
 nameCounter = 1;
 if 1
@@ -1182,15 +1198,16 @@ elseif strcmpi(AnswerDel,'Yes - Within Subject')
     alpha(f,0.1)
 end
 
-legend(handles.mainAxe,Stimuli_selected_names);%,'FontSize',8, 'Location','NorthWestOutside');
+
 handles.GraphingStuff.hLeg = Stimuli_selected_names;
 y1 = ylim;
-y1(2) = max(Y);
+% y1(2) = max(Y);
 line([0 0],y1,'LineWidth',1,...
-   'Color',[.8 .8 .8],...
-   'LineStyle','--',...
-   'Parent',handles.mainAxe);
+    'Color',[0 0 0],...
+    'LineStyle','--',...
+    'Parent',handles.mainAxe);
 hold off
+legend(handles.mainAxe,Stimuli_selected_names);
 [hObject,handles] = plotMenuCheck(hObject,handles);
 guidata(hObject,handles)
 
@@ -1222,9 +1239,16 @@ xtack = interestLine(1):(interestLineSamples/6):interestLine(2);
 posVals = find(xtack>0);
 negVals = find(xtack<0);
 
+
+if ~isequal(numel(negVals),1)
+    baseVals = xtack(negVals(1)):(xtack(negVals(1))/numel(negVals))*-1:0;
+else
+    baseVals = xtack;
+end
+
 xtickle = zeros(length(xtack)+1,1);
 xtickle(posVals+1) = xtack(posVals);
-xtickle(negVals) = xtack(negVals);
+xtickle(negVals) = baseVals(negVals);
 
 xtickMSLabel = ceil((xtickle/sampleRate)*1000);
 
@@ -1292,15 +1316,16 @@ elseif strcmpi(AnswerDel,'Yes - Within Subject')
     alpha(f,0.1)
     
 end
-legend(handles.mainAxe,namesOFcondi);
+
 handles.GraphingStuff.hLeg = namesOFcondi;
 y1 = ylim;
 %y1(2) = max(Y);
 line([0 0],y1,'LineWidth',1,...
-   'Color',[.8 .8 .8],...
-   'LineStyle','--',...
-   'Parent',handles.mainAxe);
+    'Color',[0 0 0],...
+    'LineStyle','--',...
+    'Parent',handles.mainAxe);
 hold off
+legend(handles.mainAxe,namesOFcondi);
 [hObject,handles] = plotMenuCheck(hObject,handles);
 guidata(hObject,handles)
 
@@ -1329,9 +1354,16 @@ xtack = interestLine(1):(interestLineSamples/6):interestLine(2);
 posVals = find(xtack>0);
 negVals = find(xtack<0);
 
+if ~isequal(numel(negVals),1)
+    baseVals = xtack(negVals(1)):(xtack(negVals(1))/numel(negVals))*-1:0;
+else
+    baseVals = xtack;
+end
+
+
 xtickle = zeros(length(xtack)+1,1);
 xtickle(posVals+1) = xtack(posVals);
-xtickle(negVals) = xtack(negVals);
+xtickle(negVals) = baseVals(negVals);
 
 xtickMSLabel = ceil((xtickle/sampleRate)*1000);
 
@@ -1348,7 +1380,7 @@ else
     %get comparision
     [fdaComplete,~,~,~] = performFDAfunc(analysisVariables.Stimuli_Data_Corr_Mean,compareIndexes,interestLineSamples-1,analysisVariables.alphaSelect,0);
     data_mat = eval_fd(1:interestLineSamples-1,fdaComplete);
-    plot(handles.mainAxe,data_mat);
+    plot(handles.mainAxe,x,data_mat);
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % add zero line
     line([x(1) x(end)],[0,0],'Color', 'r');
@@ -1395,9 +1427,16 @@ xtack = interestLine(1):(interestLineSamples/6):interestLine(2);
 posVals = find(xtack>0);
 negVals = find(xtack<0);
 
+if ~isequal(numel(negVals),1)
+    baseVals = xtack(negVals(1)):(xtack(negVals(1))/numel(negVals))*-1:0;
+else
+    baseVals = xtack;
+end
+
+
 xtickle = zeros(length(xtack)+1,1);
 xtickle(posVals+1) = xtack(posVals);
-xtickle(negVals) = xtack(negVals);
+xtickle(negVals) = baseVals(negVals);
 
 xtickMSLabel = ceil((xtickle/sampleRate)*1000);
 % xlim(handles.mainAxe,[interestLine(1) xtickle(end)])
@@ -1436,7 +1475,7 @@ else
     
     bar_data = reshape(mean(ANOVA_data),numel(num_stimuli),binNumber)';
     slots = ((slots-1)/sampleRate)*1000;
-
+    
     bar(handles.mainAxe,slots,bar_data);
     set(handles.mainAxe,'Box','off');
     set(handles.mainAxe,'XTick',slots);
@@ -1448,7 +1487,7 @@ else
     legend(handles.mainAxe,analysisVariables.Stimulations_names(num_stimuli));%,'FontSize',8, 'Location','NorthWestOutside');
     handles.GraphingStuff.hLeg = analysisVariables.Stimulations_names(num_stimuli);
     set(handles.mainAxe,'XMinorTick','on')
-
+    
     handles.graphName.String = 'Average change in pupil diameter at key points over time';
 end
 
@@ -1483,9 +1522,16 @@ xtack = interestLine(1):(interestLineSamples/5):interestLine(2);
 posVals = find(xtack>0);
 negVals = find(xtack<0);
 
+if ~isequal(numel(negVals),1)
+    baseVals = xtack(negVals(1)):(xtack(negVals(1))/numel(negVals))*-1:0;
+else
+    baseVals = xtack;
+end
+
+
 xtickle = zeros(length(xtack)+1,1);
 xtickle(posVals+1) = xtack(posVals);
-xtickle(negVals) = xtack(negVals);
+xtickle(negVals) = baseVals(negVals);
 
 xtickMSLabel = ceil((xtickle/sampleRate)*1000);
 
@@ -1520,7 +1566,7 @@ hold on;
 plot(handles.mainAxe,p_sign(1,:));
 h = findobj(handles.mainAxe,'Type','line');
 set(h(1),'Color','r','LineWidth',2);
-legend(handles.mainAxe,'p-value (stimuli)',num2str(analysisVariables.alphaReal));
+
 handles.GraphingStuff.hLeg = ['p-value (stimuli)',num2str(analysisVariables.alphaReal)];
 set(handles.mainAxe,'XTick',xtickle);
 set(handles.mainAxe,'XTickLabel', xtickMSLabel);
@@ -1533,12 +1579,13 @@ if isequal(numel(num_stimuli),1)
 elseif isequal(numel(num_stimuli),2)
     condiNames = [triggerNames{num_stimuli(1)} ' vs ' triggerNames{num_stimuli(2)}];
 else
-    condiNames = 'All Conditions'; 
+    condiNames = 'All Conditions';
 end
 handles.graphName.String = ['P-value stimuli factor over time for: ' condiNames];
 set(handles.mainAxe,'XMinorTick','on')
 grid on
 hold off
+legend(handles.mainAxe,'p-value (stimuli)',num2str(analysisVariables.alphaReal));
 [hObject,handles] = plotMenuCheck(hObject,handles);
 guidata(hObject,handles)
 
@@ -1567,9 +1614,16 @@ xtack = interestLine(1):(interestLineSamples/6):interestLine(2);
 posVals = find(xtack>0);
 negVals = find(xtack<0);
 
+if ~isequal(numel(negVals),1)
+    baseVals = xtack(negVals(1)):(xtack(negVals(1))/numel(negVals))*-1:0;
+else
+    baseVals = xtack;
+end
+
+
 xtickle = zeros(length(xtack)+1,1);
 xtickle(posVals+1) = xtack(posVals);
-xtickle(negVals) = xtack(negVals);
+xtickle(negVals) = baseVals(negVals);
 
 xtickMSLabel = ceil((xtickle/sampleRate)*1000);
 
@@ -1606,7 +1660,7 @@ hold on;
 plot(handles.mainAxe,F_Sign(1,:));
 h = findobj(handles.mainAxe,'Type','line');
 set(h(1),'Color','r','LineWidth',2);
-legend(handles.mainAxe,'F',['significance ' num2str(analysisVariables.alphaReal*100) '%']);
+
 exLeg = ['sign. ' num2str(analysisVariables.alphaReal*100) '%'];
 handles.GraphingStuff.hLeg = {'F',exLeg};
 set(handles.mainAxe,'XTick',xtickle);
@@ -1638,6 +1692,7 @@ set(handles.mainAxe,'XMinorTick','on')
 
 grid on
 hold off
+legend(handles.mainAxe,'F',['significance ' num2str(analysisVariables.alphaReal*100) '%']);
 [hObject,handles] = plotMenuCheck(hObject,handles);
 guidata(hObject,handles)
 
@@ -1666,9 +1721,16 @@ xtack = interestLine(1):(interestLineSamples/5):interestLine(2);
 posVals = find(xtack>0);
 negVals = find(xtack<0);
 
+if ~isequal(numel(negVals),1)
+    baseVals = xtack(negVals(1)):(xtack(negVals(1))/numel(negVals))*-1:0;
+else
+    baseVals = xtack;
+end
+
+
 xtickle = zeros(length(xtack)+1,1);
 xtickle(posVals+1) = xtack(posVals);
-xtickle(negVals) = xtack(negVals);
+xtickle(negVals) = baseVals(negVals);
 
 xtickMSLabel = ceil((xtickle/sampleRate)*1000);
 set(handles.mainAxe,'XTickLabelRotation',0);
@@ -1688,7 +1750,7 @@ if isequal(numel(handles.GeneralData.selectMe),1) || gt(numel(handles.GeneralDat
         'Condition Select','ListString',condiSelect,'ListSize',[250 300]);
     
     
-    if v 
+    if v
         if isequal(size(s,2),2)
             handles.GeneralData.selectMe = s;
         else
@@ -1725,8 +1787,10 @@ conditions = [condiNames{compareIndexes(1),1} ' - ' condiNames{compareIndexes(2)
 handles.graphName.String = [conditions ': Functional t-test of the difference'];
 set(handles.mainAxe,'Box','off');
 grid on
-legend(handles.mainAxe,{'t-val over time',['Critical t-value ' num2str(crit_t_val)]});
+
 handles.GraphingStuff.hLeg = {'t-val over time',['Critical t-value ' num2str(crit_t_val)]};
+hold off
+legend(handles.mainAxe,{'t-val over time',['Critical t-value ' num2str(crit_t_val)]});
 [hObject,handles] = plotMenuCheck(hObject,handles);
 guidata(hObject,handles)
 
@@ -1760,9 +1824,9 @@ else
     num_stimuli = handles.GeneralData.selectMe;
     
     [~,~,PCA_time] = pStim(analysisVariables.Stimuli_Data_Corr_Mean,...
-    analysisVariables.Stimuli_Data_Perc_Mean,...
-    num_stimuli,triggerNames,analysisVariables.TF_REP,...
-    analysisVariables.alphaReal,1,0);
+        analysisVariables.Stimuli_Data_Perc_Mean,...
+        num_stimuli,triggerNames,analysisVariables.TF_REP,...
+        analysisVariables.alphaReal,1,0);
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % Display of p-value of stimuli factor for each selected component
     p_PCA = PCA_time.p;
@@ -1874,8 +1938,8 @@ else
     msgbox('There is no difference in terms of peak dilation between stimuli','Peak Dilation Test')
 end
 
-        
-        
+
+
 
 % --- Executes when user attempts to close figure1.
 function figure1_CloseRequestFcn(hObject, eventdata, handles)
@@ -1883,8 +1947,8 @@ function figure1_CloseRequestFcn(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 selection = questdlg(['Close ' get(handles.figure1,'Name') '?'],...
-                     ['Close ' get(handles.figure1,'Name') '...'],...
-                     'Yes','No','Yes');
+    ['Close ' get(handles.figure1,'Name') '...'],...
+    'Yes','No','Yes');
 if strcmp(selection,'No')
     return;
 end
@@ -1925,22 +1989,22 @@ function aboutMeMenu_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 if ~isnumeric(handles.topDirPP)
-
-iconData = imread([handles.topDirPP filesep 'Functions' filesep 'GUI' filesep 'HelpGui' filesep 'eye.png']);
-
-
-Button=buttondlg('Created by Jamie Lubell 2017','About','Okay','Github',struct('Default','Okay','IconString','custom','IconData',iconData)); 
-
-switch Button      
+    
+    iconData = imread([handles.topDirPP filesep 'Functions' filesep 'GUI' filesep 'HelpGui' filesep 'eye.png']);
+    
+    
+    Button=buttondlg('Created by Jamie Lubell 2017','About','Okay','Github',struct('Default','Okay','IconString','custom','IconData',iconData));
+    
+    switch Button
         
-    case 'Github'
-        url = 'https://github.com/Lubell/PupilPlot';
-        web(url,'-browser')
-end
-
-
-
-
+        case 'Github'
+            url = 'https://github.com/Lubell/PupilPlot';
+            web(url,'-browser')
+    end
+    
+    
+    
+    
 else
     disp('Missing directories.  Made by Jamie Lubell 2017 CC license')
 end
@@ -1952,11 +2016,11 @@ function helpPageMenu_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 if ~isnumeric(handles.topDirPP)
-
-url = [handles.topDirPP filesep 'Functions' filesep 'GUI' filesep 'HelpGui'...
-    filesep 'pupilplot documentation' filesep 'PupilPlot.html'];
-web(url)
-
+    
+    url = [handles.topDirPP filesep 'Functions' filesep 'GUI' filesep 'HelpGui'...
+        filesep 'pupilplot documentation' filesep 'PupilPlot.html'];
+    web(url)
+    
 else
     disp('Missing directories.  Made by Jamie Lubell 2017 CC license')
 end

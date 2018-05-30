@@ -53,8 +53,12 @@ if isempty(varargin)
 else
     optVar = varargin{1};
     srate = optVar{2,3};
-    if isequal(srate,0)
+    if isequal(srate,0) || strcmp(srate,'        ~')
         srate = inputdlg('What is the sampling rate of the date?','SRATE');
+        if isempty(srate)
+            return
+        end
+        
         srate = srate{1};
         srate= str2double(srate);
     end

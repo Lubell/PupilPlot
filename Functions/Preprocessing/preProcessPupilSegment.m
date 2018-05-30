@@ -105,7 +105,7 @@ for i = 1:num_participants
         currentEye = eyeData(i).cleanPupil;
         
         if (indexQT(end)+interestLine(2))>length(currentEye)+1
-            errorTimeMsg = ['Trial length too long (Subject#: ' num2str(i) '), samples = ' num2str(length(currentEye)) ' and tried to grab sample: ' num2str(indexQT(end)+interestLine)];
+            errorTimeMsg = ['Trial length too long (Subject#: ' num2str(i) '), samples = ' num2str(length(currentEye)) ' and tried to grab sample: ' num2str(indexQT(end)+interestLine(2))];
             error(errorTimeMsg)
         elseif indexQT(1)+interestLine(1)<=0
             errorTimeMsg = ['Baseline period too long, trigger @ sample ' num2str(indexQT(1)) ' and tried to grab sample: ' num2str((indexQT(1)-2)+interestLine(1)+1)];

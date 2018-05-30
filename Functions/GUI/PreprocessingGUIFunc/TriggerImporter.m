@@ -104,6 +104,7 @@ switch selection
         
 end
 
+handles.selection = selection;
 
 if ~buildAnew
     
@@ -183,7 +184,7 @@ condiBuild = handles.ExtraStuff.built;
 if condiBuild
     ttStruct = handles.ExtraStuff.ttStruct;
     dataTable = handles.uitable1.Data;
-    save_ImportStats(optVar,ttStruct,dataTable,handles)
+    save_ImportStats(optVar,ttStruct,dataTable,handles,handles.selection)
 else
     warndlg('You need to build the conditions first')
 end

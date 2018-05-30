@@ -67,12 +67,11 @@ if isequal(checkOutTable{4,1},1)
     % update ride along variables
     handles.cleanValues = {checkOutTable{3,1},checkOutTable{3,2},checkOutTable{3,3}};
     
-    trialOpts = checkOutTable{4,2};
-    baseLineOpts = checkOutTable{4,3};
+    trialOpts = checkOutTable{4,2}*1000;
+    baseLineOpts = checkOutTable{4,3}*1000;
     
-    handles.baseLineTimes = {checkOutTable{4,1},trialOpts,baseLineOpts,0};
-    handles.baseLineTimes = {1,{0,0},{0,0},0};
-    
+    handles.baseLineTimes = {checkOutTable{4,1} trialOpts baseLineOpts};
+        
     handles.fsValues = {checkOutTable{2,1},checkOutTable{2,2},checkOutTable{2,3}};
     
     % populate the windows with preExisting info
@@ -89,18 +88,18 @@ if isequal(checkOutTable{4,1},1)
     handles.cleanDebug.Value =display;
     
     
-    handles.epochSize.String  = num2str(trialOpts(1)*1000);
-    handles.epochEnd.String =  num2str(trialOpts(2)*1000);
-    handles.baseLineStart.String = num2str(baseLineOpts(1)*1000);
-    handles.baseLineEND.String = num2str(baseLineOpts(2)*1000);
-    trialLength = numel((trialOpts(1)*1000):(trialOpts(2)*1000))-1;
+    handles.epochSize.String  = num2str(trialOpts(1));
+    handles.epochEnd.String =  num2str(trialOpts(2));
+    handles.baseLineStart.String = num2str(baseLineOpts(1));
+    handles.baseLineEND.String = num2str(baseLineOpts(2));
+    trialLength = numel((trialOpts(1)):(trialOpts(2)))-1;
     handles.totalTrial.String = num2str(trialLength);
     
     handles.setSample.String= num2str(checkOutTable{2,3});
 else
     % set the basic values
     handles.cleanValues = {1,'debug off',4};
-    handles.baseLineTimes = {1,{0,0},{0,0},0};
+    handles.baseLineTimes = {1,[0 0],[0 0],0};
     handles.fsValues = {0,0,0};
 end
 
@@ -193,7 +192,7 @@ function epochSize_Callback(hObject, eventdata, handles)
 answer = str2double(get(hObject,'String'));
 
 if ~isempty(answer)
-    handles.baseLineTimes{1,2}{1,1} = answer;
+    handles.baseLineTimes{1,2}(1,1) = answer;
     guidata(hObject, handles);
     % grab the epochEnd value if it is 
     epochEndVal = str2double(handles.epochEnd.String);
@@ -227,7 +226,7 @@ function epochEnd_Callback(hObject, eventdata, handles)
 answer = str2double(get(hObject,'String'));
 
 if ~isempty(answer)
-    handles.baseLineTimes{1,2}{1,2} = answer;
+    handles.baseLineTimes{1,2}(1,2) = answer;
     guidata(hObject, handles);
     % grab the epochEnd value if it is 
     epochStartVal = str2double(handles.epochSize.String);
@@ -261,7 +260,7 @@ function baseLineStart_Callback(hObject, eventdata, handles)
 answer = str2double(get(hObject,'String'));
 
 if ~isempty(answer)
-    handles.baseLineTimes{1,3}{1,1} = answer;
+    handles.baseLineTimes{1,3}(1,1) = answer;
 end
  guidata(hObject, handles);
 
@@ -290,7 +289,7 @@ function baseLineEnd_Callback(hObject, eventdata, handles)
 answer = str2double(get(hObject,'String'));
 
 if ~isempty(answer)
-    handles.baseLineTimes{1,3}{1,2} = answer;
+    handles.baseLineTimes{1,3}(1,2) = answer;
 end
  guidata(hObject, handles);
 
@@ -380,11 +379,11 @@ checkOutTable{3,3} = cleanParam{3};
 blT = handles.baseLineTimes;
 
 
-trialTStart = blT{1,2}{1,1}/1000;
-trialTEnd = blT{1,2}{1,2}/1000;
+trialTStart = blT{1,2}(1,1)/1000;
+trialTEnd = blT{1,2}(1,2)/1000;
 
-baseLineTStart = blT{1,3}{1,1}/1000;
-baseLineTEnd = blT{1,3}{1,2}/1000;
+baseLineTStart = blT{1,3}(1,1)/1000;
+baseLineTEnd = blT{1,3}(1,2)/1000;
 
 
 
@@ -465,11 +464,11 @@ switch choice
         blT = handles.baseLineTimes;
         
         
-        trialTStart = blT{1,2}{1,1}/1000;
-        trialTEnd = blT{1,2}{1,2}/1000;
+        trialTStart = blT{1,2}(1,1)/1000;
+        trialTEnd = blT{1,2}(1,2)/1000;
         
-        baseLineTStart = blT{1,3}{1,1}/1000;
-        baseLineTEnd = blT{1,3}{1,2}/1000;
+        baseLineTStart = blT{1,3}(1,1)/1000;
+        baseLineTEnd = blT{1,3}(1,2)/1000;
         
         
         
