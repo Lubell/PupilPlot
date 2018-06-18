@@ -57,24 +57,20 @@ stimulationsUncorrectedMM = zeros(num_participants,interestLineSamples,num_stimu
 stimulationsCorrectedPerc = zeros(num_participants,interestLineSamples,num_stimulations);
 
 
-if isequal(baseLine(1),interestLine(1))
-    bStart = 1;
-else
-    bStart = (baseLine(1)-interestLine(1))+1;
-end
 
-% Baseline correction
-for participant = 1:num_participants % Calculating reference value from baselineSEC-baseLineMS
-    for i = bStart:baseLineSamples
-        for stimulus = 1 : num_stimulations
-            stimulationsReferenceMat(participant, i, stimulus) = Stimulations_All(participant,i,stimulus);
-        end
-    end
-end
+bStart = (baseLine(1)-interestLine(1))+1;
+
+i = bStart:baseLineSamples;
+% % Baseline correction
+% for participant = 1:num_participants % Calculating reference value from baselineSEC-baseLineMS 
+%     for stimulus = 1 : num_stimulations
+%         stimulationsReferenceMat(participant, i, stimulus) = Stimulations_All(participant,i,stimulus);
+%     end
+% end
 
 for participant =1:num_participants
     for stimulus = 1 : num_stimulations
-        stimulationsReferenceMatMean(participant, stimulus) = mean(stimulationsReferenceMat(participant,:,stimulus));
+        stimulationsReferenceMatMean(participant, stimulus) = mean(Stimulations_All(participant,i,stimulus));
     end
 end
 
@@ -119,6 +115,9 @@ TF_REP = 0;
 for matchers = 1:num_stimulations
     if Stim_rep{matchers}>=2
         TF_REP = 1;
+    else
+        TF_REP = 0;
+        break
     end
 end
 
@@ -144,22 +143,27 @@ if TF_REP
     
     %Sum of the repetitions
     for stimulus = 1:num_stimuli
-        for participant = 1:num_participants
-            for Stimulation = First_Stimulation:First_Stimulation+Stimuli_presentations(stimulus)-1
-                if sum(stimulationsCorrectedMM(participant,:,Stimulation)) ~= 0
-                    stimuliCorrectedMean(participant,:,stimulus) = stimuliCorrectedMean(participant,:,stimulus) + stimulationsCorrectedMM(participant,:,Stimulation);
-                    stimulationsUncorrectedMean(participant,:,stimulus) = stimulationsUncorrectedMean(participant,:,stimulus) + stimulationsUncorrectedMM(participant,:,Stimulation);
-                    rep(participant,stimulus) = rep(participant,stimulus) +1;
-                end
-            end
-        end
+       % for participant = 1:num_participants
+            % for Stimulation = First_Stimulation:First_Stimulation+Stimuli_presentations(stimulus)-1
+                %                 if sum(stimulationsCorrectedMM(participant,:,Stimulation)) ~= 0
+                %                     stimuliCorrectedMean(participant,:,stimulus) = stimuliCorrectedMean(participant,:,stimulus) + stimulationsCorrectedMM(participant,:,Stimulation);
+                %                     sum(stimulationsCorrectedMM(1,:,First_Stimulation:First_Stimulation+Stimuli_presentations(stimulus)-1),3);
+                %                     stimulationsUncorrectedMean(participant,:,stimulus) = stimulationsUncorrectedMean(participant,:,stimulus) + stimulationsUncorrectedMM(participant,:,Stimulation);
+                %                     rep(participant,stimulus) = rep(participant,stimulus) +1;
+                %                 end
+                stimuliCorrectedMean(:,:,stimulus) = sum(stimulationsCorrectedMM(:,:,First_Stimulation:First_Stimulation+Stimuli_presentations(stimulus)-1),3);
+                stimulationsUncorrectedMean(:,:,stimulus) = sum(stimulationsUncorrectedMM(:,:,First_Stimulation:First_Stimulation+Stimuli_presentations(stimulus)-1),3);
+                rep(:,stimulus) = rep(:,stimulus) +numel(First_Stimulation:First_Stimulation+Stimuli_presentations(stimulus)-1);
+            % end
+       % end
         First_Stimulation = Stimuli_presentations(stimulus) + First_Stimulation;
     end
     
+    i = 1 : interestLineSamples;
     % Mean of the repetitions
     for participant = 1:num_participants
         for stimulus = 1 : num_stimuli
-            for i = 1 : interestLine
+             
                 if rep(participant,stimulus) > 0
                     stimuliCorrectedMean(participant,i,stimulus) = stimuliCorrectedMean(participant,i,stimulus)./rep(participant,stimulus);
                     stimulationsUncorrectedMean(participant,i,stimulus) = stimulationsUncorrectedMean(participant,i,stimulus)./rep(participant,stimulus);
@@ -168,7 +172,7 @@ if TF_REP
                     stimuliCorrectedMean(participant,i,stimulus) = stimuliCorrectedMean(participant,i,stimulus);
                     stimulationsUncorrectedMean(participant,i,stimulus) = stimulationsUncorrectedMean(participant,i,stimulus);
                 end
-            end
+            
         end
     end
     
