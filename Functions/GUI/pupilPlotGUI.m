@@ -981,7 +981,7 @@ xtack = interestLine(1):(interestLineSamples/6):interestLine(2);
 posVals = find(xtack>0);
 negVals = find(xtack<0);
 
-if ~isequal(numel(negVals),1)
+if ~isequal(numel(negVals),1) && ~isempty(negVals)
     baseVals = xtack(negVals(1)):(xtack(negVals(1))/numel(negVals))*-1:0;
 else
     baseVals = xtack;
@@ -1102,7 +1102,7 @@ posVals = find(xtack>0);
 negVals = find(xtack<0);
 
 
-if ~isequal(numel(negVals),1)
+if ~isequal(numel(negVals),1) && ~isempty(negVals)
     baseVals = xtack(negVals(1)):(xtack(negVals(1))/numel(negVals))*-1:0;
 else
     baseVals = xtack;
@@ -1240,7 +1240,7 @@ posVals = find(xtack>0);
 negVals = find(xtack<0);
 
 
-if ~isequal(numel(negVals),1)
+if ~isequal(numel(negVals),1) && ~isempty(negVals)
     baseVals = xtack(negVals(1)):(xtack(negVals(1))/numel(negVals))*-1:0;
 else
     baseVals = xtack;
@@ -1354,7 +1354,7 @@ xtack = interestLine(1):(interestLineSamples/6):interestLine(2);
 posVals = find(xtack>0);
 negVals = find(xtack<0);
 
-if ~isequal(numel(negVals),1)
+if ~isequal(numel(negVals),1) && ~isempty(negVals)
     baseVals = xtack(negVals(1)):(xtack(negVals(1))/numel(negVals))*-1:0;
 else
     baseVals = xtack;
@@ -1427,7 +1427,7 @@ xtack = interestLine(1):(interestLineSamples/6):interestLine(2);
 posVals = find(xtack>0);
 negVals = find(xtack<0);
 
-if ~isequal(numel(negVals),1)
+if ~isequal(numel(negVals),1) && ~isempty(negVals)
     baseVals = xtack(negVals(1)):(xtack(negVals(1))/numel(negVals))*-1:0;
 else
     baseVals = xtack;
@@ -1522,7 +1522,7 @@ xtack = interestLine(1):(interestLineSamples/5):interestLine(2);
 posVals = find(xtack>0);
 negVals = find(xtack<0);
 
-if ~isequal(numel(negVals),1)
+if ~isequal(numel(negVals),1) && ~isempty(negVals)
     baseVals = xtack(negVals(1)):(xtack(negVals(1))/numel(negVals))*-1:0;
 else
     baseVals = xtack;
@@ -1614,7 +1614,7 @@ xtack = interestLine(1):(interestLineSamples/6):interestLine(2);
 posVals = find(xtack>0);
 negVals = find(xtack<0);
 
-if ~isequal(numel(negVals),1)
+if ~isequal(numel(negVals),1) && ~isempty(negVals)
     baseVals = xtack(negVals(1)):(xtack(negVals(1))/numel(negVals))*-1:0;
 else
     baseVals = xtack;
@@ -1721,7 +1721,7 @@ xtack = interestLine(1):(interestLineSamples/5):interestLine(2);
 posVals = find(xtack>0);
 negVals = find(xtack<0);
 
-if ~isequal(numel(negVals),1)
+if ~isequal(numel(negVals),1) && ~isempty(negVals)
     baseVals = xtack(negVals(1)):(xtack(negVals(1))/numel(negVals))*-1:0;
 else
     baseVals = xtack;
