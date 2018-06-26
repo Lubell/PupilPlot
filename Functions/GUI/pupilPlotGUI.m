@@ -197,6 +197,10 @@ else
     
     guidata(hObject, handles);
     handles = importSMIRun(handles);
+    if isequal(handles,0)
+        disp('Import Cancelled')
+        return
+    end
     handles.preProcMenu.Enable = 'on';
     guidata(hObject, handles);
 end
