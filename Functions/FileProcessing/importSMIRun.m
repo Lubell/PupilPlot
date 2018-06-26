@@ -29,6 +29,10 @@ if isfield(importCheckStruct,'importFolder')
                 [trig,Lpupil,Rpupil] = importTobiiTSV([importFolder filesep files2import{i}]);
             else
                 [trig,Lpupil,Rpupil,lPi,rPi] = importSMITXT([importFolder filesep files2import{i}],lPi,rPi);
+                if isequal(trig,0)
+                    handlesOut = 0;
+                    return
+                end
                 
             end
             oldName = files2import{i};
