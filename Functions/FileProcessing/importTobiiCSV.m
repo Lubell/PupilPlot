@@ -144,44 +144,59 @@ end
 
 
 if isempty(mID) && isempty(mEV)
-    [s,v] = listdlg('PromptString','Select Event Variables: ','SelectionMode','mulitple',...
+    [s,v] = listdlg('PromptString','Select Event Variables (max 2 variables): ','SelectionMode','mulitple',...
         'ListString',pupildata,'ListSize',[250 300]);
     
-    if ~isequal(v,1)
+    if ~isequal(v,1) || numel(s)>2
         Message = 0;
         Lpupil= 0;
         Rpupil= 0;
         lPi= 0;
         rPi = 0;
         return
+    elseif isequal(numel(s),1)
+        mID = s(1);
+        mEV = [];
+    else
+        
+        mID = s(1);
+        mEV = s(2);
     end
     
     
-    mID = s(1);
-    mEV = s(2);
     
 end
 
-Message_ID = dataArray(:,mID);
-Message_Event = dataArray(:,mEV);
+
+% loose the first line
 Lpupil = dataArray(:, lPi);
 Rpupil = dataArray(:, rPi);
 
-% loose the first line
-
-Message_Event(1) = [];
-Message_ID(1) = [];
 Lpupil(1) = [];
 Rpupil(1) = [];
+
+
+if isempty(mEV)
+    Message_ID = dataArray(:,mID);
+    Message_Event = dataArray(:,mID);
+else
+    Message_ID = dataArray(:,mID);
+    Message_Event = dataArray(:,mEV);
+end
+
+% drop first line
+Message_Event(1) = [];
+Message_ID(1) = [];
+
 correctLineUp =0;
 for i = 1:length(Message_Event)
-   if contains(Message_Event{i},'Start')
+   if contains(Message_Event{i},'Start','IgnoreCase',true)
        correctLineUp =1;
        break
    end
 end
 
-if correctLineUp
+if correctLineUp && ~isempty(mEV)
     tvar = Message_Event;
     Message_Event = Message_ID;
     Message_ID = tvar;
@@ -231,8 +246,13 @@ for j = 1:length(Message_Event)
     if strcmp(Message_ID{j},'') || ~isnan(str2double(Message_ID(j)))
         Message{j} = 0;
     else
-        Message{j} = strcat(Message_ID{j},'_',Message_Event{j});
-        Message_Index(j) = 0;
+        if ~isempty(mEV)
+            Message{j} = Message_ID{j};
+            Message_Index(j) = 0;
+        else
+            Message{j} = strcat(Message_ID{j},'_',Message_Event{j});
+            Message_Index(j) = 0;
+        end
     end
     
 end
