@@ -7,7 +7,6 @@ if isfield(importCheckStruct,'importFolder')
     
     fprintf(1, 'Begin Import Functions.\n');
     % Hint: get(hObject,'Value') returns toggle state of importSMIRun
-    renameTHEfiles = 0;
     
     renameOption = handles.GeneralData.usePriorDir;
     
@@ -16,17 +15,22 @@ if isfield(importCheckStruct,'importFolder')
     importFolder = handles.GeneralData.importFolder;
     lPi = [];
     rPi = [];
-    
+    mID = [];
+    mEV = [];
     
     if isequal(renameOption,0)
         % no new name and import required
         files2import= handles.GeneralData.importTxt;
         workingDirectory = uigetdir(importFolder,'Select Directory to Import into');
         for i = 1:size(files2import,2)
-            disp(['Importing file: ' files2import{i}])
+            % disp(['Importing file: ' files2import{i}])
             [~,~,ext] = fileparts([importFolder filesep files2import{i}]);
-            if strcmpi(ext,'.tsv')
-                [trig,Lpupil,Rpupil] = importTobiiTSV([importFolder filesep files2import{i}]);
+            if strcmpi(ext,'.csv')
+                [trig,Lpupil,Rpupil,lPi,rPi,mID,mEV] = importTobiiCSV([importFolder filesep files2import{i}],lPi,rPi,mID,mEV);
+                if isequal(trig,0)
+                    handlesOut = 0;
+                    return
+                end
             else
                 [trig,Lpupil,Rpupil,lPi,rPi] = importSMITXT([importFolder filesep files2import{i}],lPi,rPi);
                 if isequal(trig,0)
