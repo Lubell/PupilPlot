@@ -181,10 +181,13 @@ function loadFileMenu_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Choice of data files for analysis (Note that other file formats can be chosen)
-[filenames,directory] = uigetfile('*.t*','Select data files','MultiSelect', 'on');
+[filenames,directory] = uigetfile('*.*','Select data files','MultiSelect', 'on');
 
 if isequal(filenames,0)
-    
+   % empty clause
+elseif ~iscell(filenames)
+    warndlg('Please select more than one file')
+    return
 else
     
     handles.GeneralData.importTxt = filenames;
